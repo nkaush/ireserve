@@ -6,7 +6,11 @@ Our project is a room reserver web application that allows users to book study r
 
 State as clearly as possible what you want to do. What problem do you want to solve, etc.?
 
+@Amaan (maybe)
+
 ## Usefulness
+
+@Shalin
 
 Explain as clearly as possible why your chosen application is useful. Make sure to answer the following questions: Are there any similar websites/applications out there?  If so, what are they, and how is yours different?
 
@@ -29,7 +33,7 @@ There are a lot of rooms to choose from, so we will group rooms by the criteria 
 
 We plan to create triggers to update and compute popularity scores of each room. Anytime a reservation is added to our table of reservations, we will re-calculate the popularity of that specific room reserved. 
 
-@todo
+@Neil
 1. talk about study group modification
 2. talk about find me a room thing
 3. talk about book current room thing
@@ -41,7 +45,10 @@ What would be a good creative component (function) that can improve the function
 
 ## Mockup
 
+@Shalin
+
 `<insert image here>`
 
 ## Work Distribution
 
+@Amaan
