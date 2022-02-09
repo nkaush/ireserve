@@ -12,7 +12,7 @@ Explain as clearly as possible why your chosen application is useful. Make sure 
 
 ## Realness
 
-Describe what your data is and where you will get it.
+Our data is the physical locations of study rooms, lounges, and areas across campus, focused on the dorm buildings (ex. ISR, PAR). We will obtain our data by going through the floor plans of buildings we would like to include into our system and gather the areas that can be reserved. The floor plans for the dorm buildings are public information that we will be able to easily download and access from various websites.
 
 ## Functionality 
 
