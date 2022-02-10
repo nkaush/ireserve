@@ -19,7 +19,6 @@ We have loaded in all the dorm maps, with all floors, and have a way to see if a
 
 As previosly mentioned, there are applications on campus like LibCal, and the older ARC reservation system during SP21, but nothing dedicated to undergraduates and specifically freshman who are the future of alot of the clubs they want to hold meeings for. The prior reservation apps are complicated and have outdated UIs, whereas ours is modern and easy to follow. The previous systems had alot of overlap and issues with reserving rooms that were already taken, and our application uses popularity and crowdsourcing to make sure that someone who makes a reservation system leaves before another one is made.  
 
-
 ## Realness
 
 Our data is the physical locations of study rooms, lounges, and areas across campus, focused on the dorm buildings (ex. ISR, PAR). We will obtain our data by going through the floor plans of buildings we would like to include into our system and gather the areas that can be reserved. The floor plans for the dorm buildings are public information that we will be able to easily download and access from various websites.
@@ -35,18 +34,23 @@ We plan on having a handful of tables to model our data.
 
 We plan on presenting a list of all rooms available on the front page of the website with a timeline of the next day or so. The timeline will consist of 30 minute chunks, indicating whether or not a room was reserved at time interval. 
 
-There are a lot of rooms to choose from, so we will group rooms by the criteria the user specifies. Users may also sort rooms by popularity, room capacity, and elevation (higher floors have better views of campus). Users may also filter rooms by this criteria as well as location on campus and room type. 
+Users will be able to select a span of consecutive time blocks to reserve rooms. They will submit a ticket to book a reservation for the room of their choice, assuming that the room is not already book during that time. We will be using `INSERT` statements to handle the booking of reservations. Users will be able to modify their reservations if they so choose. In this case, we will be using `UPDATE` statements. 
+
+There are a lot of rooms to choose from, so we will group rooms by the criteria the user specifies. Users may also sort rooms by popularity, room capacity, and elevation (higher floors have better views of campus). Users may also filter rooms by this criteria as well as location on campus and room type. All of these filters and views will be created using `SELECT` statements with `WHERE` clauses. 
 
 We plan to create triggers to update and compute popularity scores of each room. Anytime a reservation is added to our table of reservations, we will re-calculate the popularity of that specific room reserved. 
 
-1. talk about study group modification
-2. talk about find me a room thing
-3. talk about book current room thing
+Our application will have another feature that allows users to book rooms in their vicinity if the rooms are not being used for the next time slot. We are planning to request to use the users' location and alert them of the open study room if they are near the room in question. This feature will use a combination of `SELECT` statements with an `INSERT` statement to find nearby rooms and book a reservation if need be. 
 
-This is where you talk about what the website delivers. Talk about how a user would interact with the application (i.e. things that one could create, delete, update, or search for). Read the requirements for stages 4 and 5 to see what other functionalities you want to provide to the users. You should include:
-Describe what data is stored in the database. (Where is the data from, what attributes and information would be stored?)
-What are the basic functions of your web application? (What can users of this website do? Which simple and complex features are there?)
-What would be a good creative component (function) that can improve the functionality of your application? (What is something cool that you want to include? How are you planning to achieve it?)
+We will also be offering users the choice to simply make the app find a room available to reserve. Users will just enter their location of choice and click a single button, and the app will search for an available room. This feature will also use a combination of `SELECT` statements with an `INSERT` statement to book the room. This is one of our advanced features as we will want to find the best room that meets both the criteria from the users' prior bookings and the current location criteria. 
+
+Another cool feature we would like to include is the concept of study groups. Users can form study groups consisting of themselves and other users. They can then book room reservations under the study group. This feature will allow anyone in the group to be able to modify the reservation. We will need a `Group Assignment` table which models the many-to-many relationship of students to groups.  
+
+Students will also need a way to change their reservation in case they are running late or would like a different time. Our application will use `UPDATE` statements to handle these cases. Students will also need to be able to cancel their reservations. Our app will do so using `DELETE` statements on the `Reservation` table. 
+
+There are also cases where the university facilities crew may need to service or clean a room. We must account for downtime in room reservations by using `UPDATE` statements on the `Rooms` table. There are a multitude of other edge cases where we will need to update or add rooms to this table. 
+
+Users will need to be able to sign up and/or change their account settings and/or delete their account, and our app will process these requests with the appropriate `INSERT` or `UPDATE` or `DELETE` statements. 
 
 ## Mockup
 [Mock-up Of Database Project .pdf](https://github-dev.cs.illinois.edu/sp22-cs411/sp22-cs411-team049-PreQL/files/25/Mock-up.Of.Database.Project.pdf)
