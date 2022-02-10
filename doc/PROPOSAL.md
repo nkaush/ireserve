@@ -54,12 +54,12 @@ What would be a good creative component (function) that can improve the function
 ## Work Distribution
 The following is a table of the high-level tasks involved and its respective team members who are in charge of that feature
 
-| **Task**                                                                    | **Person**                                                                                      |
-|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-| UI Development                                                              | Akul  <br>Shalin<br>_(everyone can basically work on the UI for their respective pages though)_ |
-| Database Creation<br>(includes creating the map based on UIUC study spaces) | Neil<br>Amaan                                                                                   |
-| Home Page Development<br>(including Timeline & list of available rooms)     | Akul<br>Neil                                                                                    |
-| Login & Sign-up Page                                                        | Shalin<br>Akul                                                                                  |
-| Make Reservation page                                                       | Amaan<br>Shalin                                                                                 |
-| "Find me a Room" page                                                       | Akul<br>Amaan                                                                                   |
-| Book Current Room                                                           | Neil<br>Shalin                                                                                  |
+| **Task**                                                                    | **Person**                                                                                                  |
+|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| UI Development                                                              | Akul  <br>Shalin<br><br>_(everyone can basically <br>work on the UI for their <br>respective pages though)_ |
+| Database Creation<br>(includes creating the map based on UIUC study spaces) | Neil<br>Amaan                                                                                               |
+| Home Page Development<br>(including Timeline & list of available rooms)     | Akul<br>Neil                                                                                                |
+| Login & Sign-up Page                                                        | Shalin<br>Akul                                                                                              |
+| Make Reservation page                                                       | Amaan<br>Shalin                                                                                             |
+| "Find me a Room" page                                                       | Akul<br>Amaan                                                                                               |
+| Book Current Room                                                           | Neil<br>Shalin                                                                                              |
