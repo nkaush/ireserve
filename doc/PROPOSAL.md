@@ -10,9 +10,14 @@ State as clearly as possible what you want to do. What problem do you want to so
 
 ## Usefulness
 
-Why is our app useful?
+Too many times, freshmen (and this year sophmores) have had to book rooms for team meetings that are far from their residences. This is fine for larger and more official meetings, but for project meetings as a club, or small get-togethers, booking a room in Grainger using LibCal is just too much of a walk and hassle. Especially in the winter time, it becomes unsafe for freshman to venture out to these places far from their dorms to hold meetings. 
 
-Explain as clearly as possible why your chosen application is useful. Make sure to answer the following questions: Are there any similar websites/applications out there?  If so, what are they, and how is yours different?
+This is why we have build iReserve, the all in one application that allows freshman (or really anyone for that matter) the ability to book study spaces, lounges, and single person rooms right in the comfort of their own dorms. With the ability to filter out types of spaces, where they are, and what their popularity is, freshman do not have to go out when they can hold their meetings in spaces within the dorms. 
+
+We have loaded in all the dorm maps, with all floors, and have a way to see if a room has been booked so their are no overlaps. Every dorm is loaded in, so anywhere someone wants to make a meeting in-person, they can with our service. 
+
+As previosly mentioned, there are applications on campus like LibCal, and the older ARC reservation system during SP21, but nothing dedicated to undergraduates and specifically freshman who are the future of alot of the clubs they want to hold meeings for. The prior reservation apps are complicated and have outdated UIs, whereas ours is modern and easy to follow. The previous systems had alot of overlap and issues with reserving rooms that were already taken, and our application uses popularity and crowdsourcing to make sure that someone who makes a reservation system leaves before another one is made.  
+
 
 ## Realness
 
@@ -44,10 +49,7 @@ What are the basic functions of your web application? (What can users of this we
 What would be a good creative component (function) that can improve the functionality of your application? (What is something cool that you want to include? How are you planning to achieve it?)
 
 ## Mockup
-
-@Shalin
-
-`<insert image here>`
+[Mock-up Of Database Project .pdf](https://github-dev.cs.illinois.edu/sp22-cs411/sp22-cs411-team049-PreQL/files/25/Mock-up.Of.Database.Project.pdf)
 
 ## Work Distribution
 
