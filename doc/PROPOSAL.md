@@ -10,7 +10,7 @@ State as clearly as possible what you want to do. What problem do you want to so
 
 ## Usefulness
 
-@Shalin
+Why is our app useful?
 
 Explain as clearly as possible why your chosen application is useful. Make sure to answer the following questions: Are there any similar websites/applications out there?  If so, what are they, and how is yours different?
 
