@@ -57,9 +57,9 @@ The following is a table of the high-level tasks involved and its respective tea
 | **Task**                                                                    | **Person**                                                                                                  |
 |-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | UI Development                                                              | Akul  <br>Shalin<br><br>_(everyone can basically <br>work on the UI for their <br>respective pages though)_ |
-| Database Creation<br>(includes creating the map based on UIUC study spaces) | Neil<br>Amaan                                                                                               |
+| Database Creation<br>(includes creating the map based on UIUC study spaces) | Neil<br>Amaan<br>Akul<br>Shalin                                                                                               |
 | Home Page Development<br>(including Timeline & list of available rooms)     | Akul<br>Neil                                                                                                |
-| Login & Sign-up Page                                                        | Shalin<br>Akul                                                                                              |
-| Make Reservation page                                                       | Amaan<br>Shalin                                                                                             |
+| Login & Sign-up Page                                                        | Shalin<br>Amaan                                                                                             |
+| Make Reservation page                                                       | Akul<br>Shalin                                                                                             |
 | "Find me a Room" page                                                       | Akul<br>Amaan                                                                                               |
 | Book Current Room                                                           | Neil<br>Shalin                                                                                              |
