@@ -39,7 +39,6 @@ There are a lot of rooms to choose from, so we will group rooms by the criteria 
 
 We plan to create triggers to update and compute popularity scores of each room. Anytime a reservation is added to our table of reservations, we will re-calculate the popularity of that specific room reserved. 
 
-@Neil
 1. talk about study group modification
 2. talk about find me a room thing
 3. talk about book current room thing
