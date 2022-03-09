@@ -24,7 +24,8 @@ CREATE TABLE Room(
 DROP TABLE Building IF EXISTS;
 
 CREATE TABLE Building(
-  Address      VARCHAR(255) PRIMARY KEY NOT NULL,
+  BuildingID   INT PRIMARY KEY,
+  Address      VARCHAR(255) NOT NULL,
   BuildingName VARCHAR(255) NOT NULL,
   Region       VARCHAR(255) NOT NULL,
 );
