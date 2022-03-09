@@ -11,6 +11,6 @@ def str_time_prop(start, end, time_format, prop):
 
 
 def random_date(start, end, prop):
-    return str_time_prop(start, end, '%m/%d/%Y %I:%M %p', prop)
+    return str_time_prop(start, end, '%Y-%m-%d %H:%M:00', prop)
     
-print(random_date("1/1/2008 1:30 PM", "1/1/2009 4:50 AM", random.random()))
+print(random_date("2008-01-01 13:30:00", "2022-03-08 22:16:00", random.random()))
