@@ -10,6 +10,15 @@ CREATE TABLE `user` (
   `LastName` VARCHAR(255) NOT NULL, 
   `Email` VARCHAR(255) NOT NULL, 
   `HashedPassword` VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `building`;
+
+CREATE TABLE `building` (
+  `BuildingID` INT PRIMARY KEY,
+  `Address` VARCHAR(255) NOT NULL,
+  `BuildingName` VARCHAR(255) NOT NULL,
+  `Region` VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS `room`;
@@ -25,13 +34,13 @@ CREATE TABLE `room` (
   FOREIGN KEY (`BuildingID`) REFERENCES `building` (`BuildingID`) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS `building`;
+DROP TABLE IF EXISTS `groupassignment`;
 
-CREATE TABLE `building` (
-  `BuildingID` INT PRIMARY KEY,
-  `Address` VARCHAR(255) NOT NULL,
-  `BuildingName` VARCHAR(255) NOT NULL,
-  `Region` VARCHAR(255) NOT NULL,
+CREATE TABLE `groupassignment`(
+  `AssignmentID` INT PRIMARY KEY,
+  `UserID` INT,
+  `GroupName` VARCHAR(100) NOT NULL,
+  FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS `reservation`;
@@ -45,23 +54,15 @@ CREATE TABLE `reservation` (
   `EndTime` VARCHAR(100) NOT NULL,
   FOREIGN KEY (`RoomID`) REFERENCES `room` (`RoomID`) ON DELETE CASCADE,
   FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE,
-  FOREIGN KEY (`AssignmentID`) REFERENCES `groupassignment` (`AssignmentID`) ON DELETE CASCADE,
-);
-
-DROP TABLE IF EXISTS `groupassignment`;
-
-CREATE TABLE `groupassignment`(
-  `AssignmentID` INT PRIMARY KEY,
-  `UserID` INT,
-  `GroupName` VARCHAR(100) NOT NULL,
-  FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE
+  FOREIGN KEY (`AssignmentID`) REFERENCES `groupassignment` (`AssignmentID`) ON DELETE CASCADE
 );
 
 INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (0, 'Wassaja Hall', '1202 S 1st St, Champaign, IL 61820', 'Ikenberry Commons');
 INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (1, 'Nugent Hall', '207 E Gregory Dr, Champaign, IL 61820', 'Ikenberry Commons');
 INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (2, 'Hopkins Hall', '1208 S 1st St, Champaign, IL 61820', 'Ikenberry Commons');
 INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (3, 'Wardell Hall', '1012 W Illinois St, Urbana, IL 61801', 'Illinois Street Residence');
-INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (4, 'Townsend Hall', '918 W Illinois St, Urbana, IL 61801', 'Illinois Street Residence');INSERT INTO `groupassignment` (AssignmentID, UserID, GroupName) VALUES (0, 898, 'FIN174 homework group');
+INSERT INTO `building` (BuildingID, BuildingName, Address, Region) VALUES (4, 'Townsend Hall', '918 W Illinois St, Urbana, IL 61801', 'Illinois Street Residence');
+INSERT INTO `groupassignment` (AssignmentID, UserID, GroupName) VALUES (0, 898, 'FIN174 homework group');
 INSERT INTO `groupassignment` (AssignmentID, UserID, GroupName) VALUES (1, 161, 'BIO192 project group');
 INSERT INTO `groupassignment` (AssignmentID, UserID, GroupName) VALUES (2, 808, 'ANSC178 midterm study group');
 INSERT INTO `groupassignment` (AssignmentID, UserID, GroupName) VALUES (3, 647, 'AAS337 project group');
