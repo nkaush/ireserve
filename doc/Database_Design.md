@@ -116,34 +116,34 @@ Results:
 ## Advanced Query 1 Indices
 
 ### Before Photo:
-![](index_1_1_before.png)
+![](images/indexes/index_1_1_before.png)
 
 ### Index 1
 We created an index on the first ten characters of the group name field in the group table. This caused the cost of filtering by group name to decrease from 50.99 to 5.66 because it had to scan fewer rows and the nested inner join also became faster because it had fewer rows to scan and the cost had decreased. 
-![](index_1_1_after.png)
+![](images/indexes/index_1_1_after.png)
 
 ### Index 2
 We created an index on the first character of the group name field in the group table. This caused the cost of filtering by group name to only scan 66 rows instead of 499 and decrease the cost from 50.99 to 29.96. This index is not as efficient because it starts with the first character and there are multiple courses that start with “C” other than CS for our query.
-![](index_1_2_after.png)
+![](images/indexes/index_1_2_after.png)
 
 ### Index 3 
 We created an index on the first 3 characters of the group name field in the group table. This caused the cost of filtering by group name to decrease from 50.99 to 5.66 because it had to scan fewer rows and the nested inner join also became faster because it had fewer rows to scan and the cost had decreased. This index had the same outcome as the first index we created with an index on the first ten characters of the group name field in the group table because the filter was only looking for the first 3 characters of the group name thus an index with more then 3 characters will be the same.
-![](index_1_3_after.png)
+![](images/indexes/index_1_3_after.png)
 
 ## Advanced Query 2 Indices
 
 ### Before Photo:
-![](index_2_1_before.png)
+![](images/indexes/index_2_1_before.png)
 
 ### Index 1
 We created an index on the first 4 characters of the Start time in the reservation table. This caused the cost of filtering by start time to not change from 304.25 because the index we were searching for is equally as efficient. Since there were so many rows that started with a year of 2021, using the primary key to search for rows was not faster than using the index in the reservation table for the start time filters. 
-![](index_2_2_after.png)
+![](images/indexes/index_2_2_after.png)
 
 ### Index 2
 We created an index on the start time field on the first 7 characters to make searching for the month and year faster. When we filter by just this constraint in the index, the cost goes from 304.25 to 83.51. This is because the number of rows to filter goes from 3000 to 185. The query itself only knows to look for a certain year and month, and just like a B+ tree, can narrow down where to look therefore decreasing the cost.
-![](index_2_1_after.png)
+![](images/indexes/index_2_1_after.png)
 
 ### Index 3 
 We created an index on the Room ID field that searches for rooms that have null values. We saw that there was no change from 304.25 because we ended up finding that there were no rooms that were not null. Therefore, we ended up filtering by the primary key again, and not by the index. 
-![](index_2_3_after.png)
+![](images/indexes/index_2_3_after.png)
 
