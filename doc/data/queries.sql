@@ -1,10 +1,15 @@
 /* select priority users: in a CS 400 level or has 7+ reservations */
 (SELECT DISTINCT u.FirstName, u.LastName
-FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
-WHERE grp.GroupName LIKE 'CS4__ %')
+ FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+ WHERE grp.GroupName LIKE 'CS4__ %'
+)
 UNION
 (SELECT u.FirstName, u.LastName FROM `user` u
-WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7));
+ WHERE u.UserID IN (SELECT r.UserID 
+                    FROM reservation r 
+                    GROUP BY r.UserID 
+                    HAVING COUNT(r.UserID) >= 7)
+);
 
 SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
 FROM (SELECT * FROM room r NATURAL JOIN building b
