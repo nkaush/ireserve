@@ -27,19 +27,19 @@ print("__________________________")
 floors = [4, 4, 4, 12, 5, 4, 4, 6, 4, 4, 4, 12, 12]
 rid = 0
 for building_id in range(len(data)):
-  num_rooms_per_floor = random.randint(4, 13)
+  num_rooms_per_floor = random.randint(10, 15)
   for floor in range(floors[building_id]):
-    rooms = {}
+    rooms = set()
     for _ in range(num_rooms_per_floor):
       room_num = random.randint(0, 100)
       while room_num in rooms:
         room_num = random.randint(0, 100)
-      rooms.append(room_num)
+      rooms.add(room_num)
 
       popularity = int(random.random() * 10000) / 100.0
       capacity = random.randint(4, 15)
 
-      room_type = "Study Room"
+      room_type = "'Study Room'"
       rnum = (100 * (floor + 1)) + room_num
 
       s = "INSERT INTO Room(RoomID, BuildingID, FloorNumber, RoomNumber, RoomCapacity, RoomType, Popularity)"

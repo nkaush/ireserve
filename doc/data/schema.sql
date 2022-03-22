@@ -1,54 +1,66 @@
-DROP TABLE User IF EXISTS;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`ireserve` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-CREATE TABLE User(
-  UserID         INT PRIMARY KEY, 
-  FirstName      VARCHAR(255) NOT NULL,
-  LastName       VARCHAR(255) NOT NULL, 
-  Email          VARCHAR(255) NOT NULL, 
-  HashedPassword VARCHAR(255) NOT NULL
+USE `ireserve`;
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  `UserID` INT PRIMARY KEY, 
+  `FirstName` VARCHAR(255) NOT NULL,
+  `LastName` VARCHAR(255) NOT NULL, 
+  `Email` VARCHAR(255) NOT NULL, 
+  `HashedPassword` VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `building`;
+
+CREATE TABLE `building` (
+  `BuildingID` INT PRIMARY KEY,
+  `Address` VARCHAR(255) NOT NULL,
+  `BuildingName` VARCHAR(255) NOT NULL,
+  `Region` VARCHAR(255) NOT NULL
 );
 
-DROP TABLE Room IF EXISTS;
+DROP TABLE IF EXISTS `room`;
 
-CREATE TABLE Room(
-  RoomID       INT PRIMARY KEY,
-  BuildingID   INT,
-  FloorNumber  INT,
-  RoomNumber   INT,
-  RoomCapacity INT,
-  RoomType:    VARCHAR(50) NOT NULL,
-  Popularity   REAL,
-  FOREIGN KEY (BuildingID) REFERENCES Building(BuildingID) ON DELETE CASCADE
+CREATE TABLE `room` (
+  `RoomID` INT PRIMARY KEY,
+  `BuildingID` INT,
+  `FloorNumber` INT,
+  `RoomNumber` INT,
+  `RoomCapacity` INT,
+  `RoomType` VARCHAR(50) NOT NULL,
+  `Popularity` REAL,
+  FOREIGN KEY (`BuildingID`) REFERENCES `building` (`BuildingID`) ON DELETE CASCADE
 );
 
-DROP TABLE Building IF EXISTS;
+DROP TABLE IF EXISTS `group`;
 
-CREATE TABLE Building(
-  BuildingID   INT PRIMARY KEY,
-  Address      VARCHAR(255) NOT NULL,
-  BuildingName VARCHAR(255) NOT NULL,
-  Region       VARCHAR(255) NOT NULL,
+CREATE TABLE `group`(
+  `GroupID` INT PRIMARY KEY,
+  `GroupName` VARCHAR(100) NOT NULL
 );
 
-DROP TABLE Reservation IF EXISTS;
+DROP TABLE IF EXISTS `groupassignment`;
 
-CREATE TABLE Reservation(
-  ReservationID INT PRIMARY KEY,
-  RoomID        INT,
-  UserID        INT,
-  AssignmentID  INT,
-  StartTime     VARCHAR(100) NOT NULL,
-  EndTime       VARCHAR(100) NOT NULL,
-  FOREIGN KEY (RoomID) REFERENCES Room(RoomID) ON DELETE CASCADE,
-  FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
-  FOREIGN KEY (AssignmentID) REFERENCES GroupAssignment(AssignmentID) ON DELETE CASCADE,
+CREATE TABLE `groupassignment`(
+  `AssignmentID` INT PRIMARY KEY,
+  `UserID` INT,
+  `GroupID` INT,
+  FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE,
+  FOREIGN KEY (`GroupID`) REFERENCES `group` (`GroupID`) ON DELETE CASCADE
 );
 
-DROP TABLE GroupAssignment IF EXISTS;
+DROP TABLE IF EXISTS `reservation`;
 
-CREATE TABLE GroupAssignment(
-  AssignmentID INT PRIMARY KEY,
-  UserID       INT,
-  GroupName    VARCHAR(100) NOT NULL,
-  FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+CREATE TABLE `reservation` (
+  `ReservationID` INT PRIMARY KEY,
+  `RoomID` INT,
+  `UserID` INT,
+  `GroupID` INT,
+  `StartTime` VARCHAR(100) NOT NULL,
+  `EndTime` VARCHAR(100) NOT NULL,
+  FOREIGN KEY (`RoomID`) REFERENCES `room` (`RoomID`) ON DELETE CASCADE,
+  FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE CASCADE,
+  FOREIGN KEY (`GroupID`) REFERENCES `group` (`GroupID`) ON DELETE CASCADE
 );
