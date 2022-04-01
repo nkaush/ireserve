@@ -7,22 +7,22 @@ from db import *
 
 app = Flask(__name__)
 
-
 # Google Cloud SQL (change this accordingly)
-PASSWORD ="your database password"
-PUBLIC_IP_ADDRESS ="public ip of database"
-DBNAME ="database name"
-PROJECT_ID ="gcp project id"
-INSTANCE_NAME ="instance name"
+
+CLOUD_SQL_DATABASE_NAME = os.environ.get("CLOUD_SQL_DATABASE_NAME")
+CLOUD_SQL_USERNAME = os.environ.get("CLOUD_SQL_USERNAME")
+CLOUD_SQL_PASSWORD=os.environ.get("CLOUD_SQL_PASSWORD")
+CLOUD_SQL_PUBLIC_IP_ADDRESS = os.environ.get("CLOUD_SQL_PUBLIC_IP_ADDRESS")
+CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
  
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
-app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql + mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}/{DBNAME}?unix_socket =/cloudsql/{PROJECT_ID}:{INSTANCE_NAME}"
+app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
  
 db = SQLAlchemy(app)
 
-class Users(db.Model):
+class User(db.Model):
     UserId = db.Column(db.Integer, primary_key = True, nullable = False)
     FirstName = db.Column(db.String(255), nullable = False)
     LastName = db.Column(db.String(255), nullable = False)
@@ -40,7 +40,9 @@ def home():
 @app.route('/view')
 def view():
     # fetches all the users
-    users = Users.query.all()
+    users = User.query.all()
+    # result = db.engine.execute("<sql here>")
+
     # response list consisting user details
     response = list()
  
