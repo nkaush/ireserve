@@ -46,7 +46,7 @@ def view():
     # response list consisting user details
     response = list()
  
-    for user in users:
+    for user in users[:15]:
         response.append({
             "FirstName" : user.FirstName,
             "Email": user.Email
@@ -57,6 +57,51 @@ def view():
         'message': response
     }, 200)
  
+@app.route('/add', methods =['POST'])
+def add():
+    # getting name and email
+    first_name = request.form.get('FirstName')
+    email = request.form.get('Email')
+ 
+    # checking if user already exists
+    user = User.query.filter_by(email = email).first()
+ 
+    if not user:
+        try:
+            # creating Users object
+            user = User(
+                UserId = 1001,
+                FirstName = first_name,
+                LastName = "",
+                Email = email, 
+                HashedPassword = ""
+            )
+            # adding the fields to users table
+            db.session.add(user)
+            db.session.commit()
+            # response
+            responseObject = {
+                'status' : 'success',
+                'message': 'Successfully registered.'
+            }
+ 
+            return make_response(responseObject, 200)
+        except:
+            responseObject = {
+                'status' : 'fail',
+                'message': 'Some error occured !!'
+            }
+ 
+            return make_response(responseObject, 400)
+         
+    else:
+        # if user already exists then send status as fail
+        responseObject = {
+            'status' : 'fail',
+            'message': 'User already exists !!'
+        }
+ 
+        return make_response(responseObject, 403)
  
 if __name__ == "__main__":
     # serving the app directly
