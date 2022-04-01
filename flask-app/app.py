@@ -1,9 +1,7 @@
 # imports
 import os
-import pymysql
 from flask import Flask, request, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
-from db import *
 
 app = Flask(__name__)
 
@@ -45,8 +43,58 @@ def view():
 
     # response list consisting user details
     response = list()
+    
+    return render_template("users.html", queried_users=response)
+    
+@app.route('/add', methods =['POST'])
+def add():
+    # getting name and email
+    first_name = request.json.get('FirstName')
+    email = request.json.get('Email')
 
-    return render_template("users.html", queried_users=response[:15])
+    print(first_name)
+    print(email)
+ 
+    # checking if user already exists
+    user = User.query.filter_by(Email = email).first()
+ 
+    if not user:
+        try:
+            # creating Users object
+            user = User(
+                UserId = 1001,
+                FirstName = first_name,
+                LastName = "",
+                Email = email, 
+                HashedPassword = ""
+            )
+            # adding the fields to users table
+            db.session.add(user)
+            db.session.commit()
+            # response
+            responseObject = {
+                'status' : 'success',
+                'message': 'Successfully registered.'
+            }
+ 
+            return make_response(responseObject, 200)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status' : 'fail',
+                'message': 'Some error occured !!'
+            }
+ 
+            return make_response(responseObject, 400)
+         
+    else:
+        # if user already exists then send status as fail
+        responseObject = {
+            'status' : 'fail',
+            'message': 'User already exists !!'
+        }
+ 
+        return make_response(responseObject, 403)
  
 if __name__ == "__main__":
     # serving the app directly
