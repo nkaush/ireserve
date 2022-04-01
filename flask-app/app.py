@@ -40,11 +40,8 @@ def view():
     # fetches all the users
     users = User.query.all()
     # result = db.engine.execute("<sql here>")
-
-    # response list consisting user details
-    response = list()
     
-    return render_template("users.html", queried_users=response)
+    return render_template("users.html", queried_users=users)
     
 @app.route('/add', methods =['POST'])
 def add():
