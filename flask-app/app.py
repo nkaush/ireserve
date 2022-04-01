@@ -2,6 +2,7 @@
 import os
 from flask import Flask, request, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 app = Flask(__name__)
 
@@ -45,7 +46,7 @@ def view():
 
 #add user    
 @app.route('/add_user', methods =['POST'])
-def add():
+def add_user():
     # getting name and email
     first_name = request.json.get('FirstName')
     email = request.json.get('Email')
@@ -95,15 +96,17 @@ def add():
         return make_response(responseObject, 403)
 
 #Search for room   
-@app.route('/Search_room', methods =['POST'])
-def add():
-    searched_building = request.json.get('Building')
+@app.route('/search_room', methods =['GET'])
+def search_room():
+    searched_building = request.args.get("building")
 
     print(searched_building)
  
     # checking for building
-    rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE %{searched_building}%;")
-
+    rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+    text("select * from table where "
+         "string like :string limit 1"), 
+    string="_stringStart%"
     # result = db.engine.execute("<sql here>")
 
     return render_template("rooms.html", queried_rooms=rooms)
