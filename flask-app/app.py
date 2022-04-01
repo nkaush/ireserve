@@ -42,8 +42,9 @@ def view():
     # result = db.engine.execute("<sql here>")
     
     return render_template("users.html", queried_users=users)
-    
-@app.route('/add', methods =['POST'])
+
+#add user    
+@app.route('/add_user', methods =['POST'])
 def add():
     # getting name and email
     first_name = request.json.get('FirstName')
@@ -92,6 +93,22 @@ def add():
         }
  
         return make_response(responseObject, 403)
+
+#Search for room   
+@app.route('/Search_room', methods =['POST'])
+def add():
+    searched_building = request.json.get('Building')
+
+    print(searched_building)
+ 
+    # checking for building
+    rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE %{searched_building}%;")
+
+    # result = db.engine.execute("<sql here>")
+
+    return render_template("rooms.html", queried_rooms=rooms)
+ 
+    
  
 if __name__ == "__main__":
     # serving the app directly
