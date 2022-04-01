@@ -111,7 +111,15 @@ def search_room():
 
     return render_template("rooms.html", queried_rooms=rooms)
  
+# Delete Reservation
+@app.route('/Reservation/Delete', methods =['GET'])
+def delete_reservation():
+    searched_reservation = request.args.get("ReservationId")
+    rooms = db.engine.execute("DELETE * FROM reservation WHERE ReservationID = {};".format(searched_reservation))
     
+    reservations = db.engine.execute("SELECT * FROM reservation;")
+
+    return render_template("reservation.html", queried_reservations=reservations)   
  
 if __name__ == "__main__":
     # serving the app directly
