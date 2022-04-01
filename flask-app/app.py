@@ -45,18 +45,8 @@ def view():
 
     # response list consisting user details
     response = list()
- 
-    for user in users:
-        response.append({
-            "FirstName" : user.FirstName,
-            "Email": user.Email
-        })
- 
-    return make_response({
-        'status' : 'success',
-        'message': response
-    }, 200)
- 
+
+    return render_template("users.html", queried_users=response[:15])
  
 if __name__ == "__main__":
     # serving the app directly
