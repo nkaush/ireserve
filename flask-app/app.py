@@ -87,22 +87,22 @@ def get_priority_users():
 @app.route('/reservations')
 def get_all_buildings():
     
-    reservations = db.engine.execute("SELECT * FROM reservation;")
+    reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
     return render_template("reservation.html", queried_reservations=reservations)
 
 # Reservations for a user  
 @app.route('/reservations/user', methods =['GET'])
 def reservations_for_user():
-    user_id= request.args.get("UserID")
+    user_id= request.args.get("userid")
 
     print(user_id)
  
     # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM reservations r WHERE r.UserID LIKE :query;"), query="%{}%".format(user_id))
+    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;"), query="{}".format(user_id))
     
-    return render_template("user_reservations.html", queried_reservations=reservations)
+    return render_template("reservation.html", queried_reservations=reservations)
 
-@app.route('reservations/popular_may21')
+@app.route('/reservations/popular_may21')
 def get_popular_may21_reservations():
     reservations = db.engine.execute(
         """
