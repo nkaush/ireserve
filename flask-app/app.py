@@ -34,6 +34,14 @@ class Building(db.Model):
     BuildingName = db.Column(db.String(255), nullable = False)
     Region = db.Column(db.String(255), nullable = False)
 
+class Reservation(db.Model):
+    ReservationID =  db.Column(db.Integer, primary_key = True, nullable = False)
+    RoomID =  db.Column(db.Integer, nullable = False)
+    UserID = db.Column(db.Integer, nullable = False)
+    GroupID = db.Column(db.Integer, nullable = False)
+    StartTime = db.Column(db.String(100), nullable = False)
+    EndTime = db.Column(db.String(100), nullable = False)
+
 #Initial page
 @app.route('/')
 def home(): 
@@ -46,16 +54,21 @@ def send_resume():
     return send_from_directory('static', 'images/favicon.png')
 
 # fetches all the users
-@app.route('/view')
+@app.route('/users')
 def view():
     # fetches all the users
     users = User.query.all()
-    # result = db.engine.execute("<sql here>")
-    
     return render_template("users.html", queried_users=users)
 
+# All Buildings   
+@app.route('/reservations')
+def get_all_buildings():
+    
+    reservations = db.engine.execute(text("SELECT * FROM reservation r"))
+    return render_template("reservation.html", queried_rooms=reservations)
+
 #add user    
-@app.route('/add_user', methods =['POST'])
+@app.route('/Users/add', methods =['POST'])
 def add_user():
     # getting name and email
     first_name = request.json.get('FirstName')
@@ -106,7 +119,7 @@ def add_user():
         return make_response(responseObject, 403)
 
 #Search for room   
-@app.route('/search_room', methods =['GET'])
+@app.route('/buildings/search_room', methods =['GET'])
 def search_room():
     searched_building = request.args.get("building")
 
@@ -122,14 +135,73 @@ def search_room():
     return render_template("rooms.html", queried_rooms=rooms)
  
 # Delete Reservation
-@app.route('/Reservation/Delete', methods =['GET'])
+@app.route('/reservation/delete', methods =['GET'])
 def delete_reservation():
     searched_reservation = request.args.get("ReservationId")
     rooms = db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(searched_reservation))
     
     reservations = db.engine.execute("SELECT * FROM reservation;")
 
-    return render_template("reservation.html", queried_reservations=reservations)   
+    return render_template("reservation_delete.html", queried_reservations=reservations)
+
+
+#add reservation    
+@app.route('/reservation/add', methods =['POST'])
+def add_reservtaion():
+    # getting components of reservation
+
+    group_id = request.json.get('GroupID')
+    room_id = request.json.get('RoomID')
+    start_time = request.json.get('StartTime')
+    end_time = request.json.get('end_time')
+
+    print(group_id)
+    print(room_id)
+    print(start_time)
+    print(end_time)
+ 
+    # checking if reservtaion already exists
+    reservation = Reservation.query.filter_by(GroupID = group_id, RoomID = room_id).first()
+ 
+    if not reservtaion:
+        try:
+            max_id = db.engine.execute("Select MAX(ReservationID) from reservation")
+
+            reservtaion = Reservation(
+                 ReservationID = (max_id + 1),
+                 RoomID = room_id,
+                 UserID = 10002,
+                 GroupID = group_id,
+                 StartTime = start_time,
+                 EndTime = end_time
+            )
+            # adding the fields to users table
+            db.session.add(reservation)
+            db.session.commit()
+            # response
+            responseObject = {
+                'status' : 'success',
+                'message': 'Successfully registered.'
+            }
+ 
+            return make_response(responseObject, 200)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status' : 'fail',
+                'message': 'Some error occured !!'
+            }
+ 
+            return make_response(responseObject, 400)
+         
+    else:
+        # if user already exists then send status as fail
+        responseObject = {
+            'status' : 'fail',
+            'message': 'User already exists !!'
+        }
+ 
+        return make_response(responseObject, 403)   
  
 if __name__ == "__main__":
     # serving the app directly
