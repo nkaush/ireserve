@@ -119,20 +119,19 @@ def add_user():
         return make_response(responseObject, 403)
 
 #Search for room   
-@app.route('/buildings/search_room', methods =['GET'])
+@app.route('/rooms', methods =['GET'])
 def search_room():
     searched_building = request.args.get("building")
 
-    print(searched_building)
- 
-    # checking for building
-    rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
-    text("select * from table where "
-         "string like :string limit 1"), 
-    string="_stringStart%"
-    # result = db.engine.execute("<sql here>")
+    rooms = None
 
-    return render_template("rooms.html", queried_rooms=rooms)
+    if searched_building is None: 
+        rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
+    else: 
+        print(searched_building)
+        rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+
+    return render_template("rooms.html", route="rooms", queried_rooms=rooms)
  
 # Delete Reservation
 @app.route('/reservation/delete', methods =['GET'])
@@ -163,14 +162,14 @@ def add_reservtaion():
     # checking if reservtaion already exists
     reservation = Reservation.query.filter_by(GroupID = group_id, RoomID = room_id).first()
  
-    if not reservtaion:
+    if not reservation:
         try:
-            max_id = db.engine.execute("Select MAX(ReservationID) from reservation")
-
-            reservtaion = Reservation(
+            max_id = db.engine.execute("Select MAX(ReservationID) from reservation").first()[0]
+            print(max_id)
+            reservation = Reservation(
                  ReservationID = (max_id + 1),
                  RoomID = room_id,
-                 UserID = 10002,
+                 UserID = 10,
                  GroupID = group_id,
                  StartTime = start_time,
                  EndTime = end_time
