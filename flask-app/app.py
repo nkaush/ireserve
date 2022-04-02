@@ -28,6 +28,12 @@ class User(db.Model):
     Email = db.Column(db.String(255), nullable = False)
     HashedPassword = db.Column(db.String(255), nullable = False)
 
+class Building(db.Model):
+    BuildingID = db.Column(db.Integer, primary_key = True, nullable = False)
+    Address = db.Column(db.String(255), nullable = False)
+    BuildingName = db.Column(db.String(255), nullable = False)
+    Region = db.Column(db.String(255), nullable = False)
+
 #Initial page
 @app.route('/')
 def home(): 
