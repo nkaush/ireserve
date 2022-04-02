@@ -71,11 +71,8 @@ def reservations_for_user():
     print(user_id)
  
     # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM reservations r WHERE r.UserID LIKE :query;"), query="%{}%".format(reservations))
-    #text("select * from table where "
-     #    "string like :string limit 1"), 
-    #string="_stringStart%"
-
+    reservations = db.engine.execute(text("SELECT * FROM reservations r WHERE r.UserID LIKE :query;"), query="%{}%".format(user_id))
+    
     return render_template("user_reservations.html", queried_reservations=reservations)
 
 #add user    
