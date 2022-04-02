@@ -28,6 +28,12 @@ class User(db.Model):
     Email = db.Column(db.String(255), nullable = False)
     HashedPassword = db.Column(db.String(255), nullable = False)
 
+class Building(db.Model):
+    BuildingID = db.Column(db.Integer, primary_key = True, nullable = False)
+    Address = db.Column(db.String(255), nullable = False)
+    BuildingName = db.Column(db.String(255), nullable = False)
+    Region = db.Column(db.String(255), nullable = False)
+
 #Initial page
 @app.route('/')
 def home(): 
@@ -120,7 +126,7 @@ def search_room():
 @app.route('/Reservation/Delete', methods =['GET'])
 def delete_reservation():
     searched_reservation = request.args.get("ReservationId")
-    rooms = db.engine.execute("DELETE * FROM reservation WHERE ReservationID = {};".format(searched_reservation))
+    rooms = db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(searched_reservation))
     
     reservations = db.engine.execute("SELECT * FROM reservation;")
 
