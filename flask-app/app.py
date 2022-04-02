@@ -115,7 +115,7 @@ def search_room():
 @app.route('/Reservation/Delete', methods =['GET'])
 def delete_reservation():
     searched_reservation = request.args.get("ReservationId")
-    rooms = db.engine.execute("DELETE * FROM reservation WHERE ReservationID = {};".format(searched_reservation))
+    rooms = db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(searched_reservation))
     
     reservations = db.engine.execute("SELECT * FROM reservation;")
 
