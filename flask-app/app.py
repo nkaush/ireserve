@@ -56,6 +56,29 @@ def view():
     users = User.query.all()
     return render_template("users.html", queried_users=users)
 
+@app.route('/users/priority')
+def get_priority_users():
+    """Fetches all priority users."""
+
+    users = db.engine.execute(
+        """
+        (SELECT DISTINCT u.FirstName, u.LastName 
+        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp grp
+        WHERE grp.GroupName LIKE 'CS4__ %'
+        )
+        UNION
+        (SELECT u.FirstName, u.LastName 
+        FROM `user` u
+        WHERE u.UserID IN (SELECT r.UserID 
+                    FROM reservation r 
+                    GROUP BY r.UserID 
+                    HAVING COUNT(r.UserID) >= 7)
+        );
+        """
+    )
+
+    return render_template("users_priority.html", queried_users=users)
+
 # All reservations   
 @app.route('/reservations')
 def get_all_buildings():
@@ -74,6 +97,20 @@ def reservations_for_user():
     reservations = db.engine.execute(text("SELECT * FROM reservations r WHERE r.UserID LIKE :query;"), query="%{}%".format(user_id))
     
     return render_template("user_reservations.html", queried_reservations=reservations)
+
+@app.route('reservations/popular_may21')
+def get_popular_may21_reservations():
+    reservations = db.engine.execute(
+        """
+        SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
+        FROM (SELECT * FROM room r NATURAL JOIN building b
+        WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE "2021-05%")) AS tmp
+        GROUP BY tmp.BuildingName
+        HAVING AVG(tmp.Popularity) > 50
+        ORDER BY AVG_POPULARITY DESC;
+        """
+    )
+    return render_template("reservations_may_popular.html", queried_reservations=reservations)
 
 #add user    
 @app.route('/Users/add', methods =['POST'])
