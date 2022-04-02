@@ -36,16 +36,21 @@ def home():
     )
 
 # fetches all the users
-@app.route('/view')
+@app.route('/users')
 def view():
     # fetches all the users
     users = User.query.all()
-    # result = db.engine.execute("<sql here>")
-    
     return render_template("users.html", queried_users=users)
 
+# All Buildings   
+@app.route('/reservations')
+def get_all_buildings():
+    
+    reservations = db.engine.execute(text("SELECT * FROM reservation r"))
+    return render_template("reservation.html", queried_rooms=reservations)
+
 #add user    
-@app.route('/add_user', methods =['POST'])
+@app.route('/Users/add', methods =['POST'])
 def add_user():
     # getting name and email
     first_name = request.json.get('FirstName')
@@ -96,7 +101,7 @@ def add_user():
         return make_response(responseObject, 403)
 
 #Search for room   
-@app.route('/search_room', methods =['GET'])
+@app.route('/Buildings/search_room', methods =['GET'])
 def search_room():
     searched_building = request.args.get("building")
 
