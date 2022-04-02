@@ -56,12 +56,27 @@ def view():
     users = User.query.all()
     return render_template("users.html", queried_users=users)
 
-# All Buildings   
+# All reservations   
 @app.route('/reservations')
 def get_all_buildings():
     
     reservations = db.engine.execute(text("SELECT * FROM reservation r"))
     return render_template("reservation.html", queried_rooms=reservations)
+
+# Reservations for a user  
+@app.route('/reservations/user', methods =['GET'])
+def reservations_for_user():
+    user_id= request.args.get("UserID")
+
+    print(user_id)
+ 
+    # checking for reservation
+    reservations = db.engine.execute(text("SELECT * FROM reservations r WHERE r.UserID LIKE :query;"), query="%{}%".format(reservations))
+    #text("select * from table where "
+     #    "string like :string limit 1"), 
+    #string="_stringStart%"
+
+    return render_template("user_reservations.html", queried_reservations=reservations)
 
 #add user    
 @app.route('/Users/add', methods =['POST'])
