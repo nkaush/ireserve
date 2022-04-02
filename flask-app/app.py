@@ -1,6 +1,6 @@
 # imports
 import os
-from flask import Flask, request, make_response, render_template
+from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
@@ -40,6 +40,10 @@ def home():
     return render_template(
         "main_page.html"
     )
+
+@app.route('/favicon.ico')
+def send_resume():
+    return send_from_directory('static', 'images/favicon.png')
 
 # fetches all the users
 @app.route('/view')
