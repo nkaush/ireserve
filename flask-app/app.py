@@ -64,8 +64,8 @@ def view():
 @app.route('/reservations')
 def get_all_buildings():
     
-    reservations = db.engine.execute(text("SELECT * FROM reservation r"))
-    return render_template("reservation.html", queried_rooms=reservations)
+    reservations = db.engine.execute("SELECT * FROM reservation;")
+    return render_template("reservation.html", queried_reservations=reservations)
 
 # Reservations for a user  
 @app.route('/reservations/user', methods =['GET'])
