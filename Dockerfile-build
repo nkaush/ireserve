@@ -4,7 +4,7 @@ COPY /flask-app/ /flaskr
 
 WORKDIR /flaskr
 
-EXPOSE 5000
+EXPOSE 8080
 
 RUN pip install -r requirements.txt
 

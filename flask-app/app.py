@@ -17,6 +17,8 @@ CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 CLOUD_PORT = os.environ.get("PORT")
 if CLOUD_PORT is None:
     CLOUD_PORT = os.environ.get("CLOUD_PORT")
+
+print("CLOUD_PORT =", CLOUD_PORT)
  
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
@@ -297,6 +299,6 @@ def create_app():
    
 if __name__ == "__main__":
     # serving the app directly
-    # app.run(host='0.0.0.0')
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=CLOUD_PORT)
+    app.run(host='0.0.0.0')
+    # from waitress import serve
+    # serve(app, host="0.0.0.0", port=CLOUD_PORT)
