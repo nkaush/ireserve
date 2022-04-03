@@ -4,18 +4,18 @@ start:
 	docker build -t 411-app .
 	docker run -it --rm -p $(PORT):$(PORT) 411-app
 
-local:
-	docker build -t neilk3/411-flask:latest -f Dockerfile-build .
-	docker run -it --rm -p $(PORT):$(PORT) neilk3/411-flask:latest
+develop:
+	docker build -t 411-develop -f Dockerfile-develop .
+	docker run -it --rm -p 8080:8080 -v `pwd`/flask-app:/flaskr 411-develop
 
 build:
 	docker build -t neilk3/411-flask:latest -f Dockerfile-build .
 
-push: 
-	docker push neilk3/411-flask:latest
-
 run:
 	docker run -it --rm -p $(PORT):$(PORT) neilk3/411-flask:latest
+
+push: 
+	docker push neilk3/411-flask:latest
 
 waitress:
 	waitress-serve --port=$(PORT) --call app:create_app
