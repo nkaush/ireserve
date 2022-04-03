@@ -28,30 +28,34 @@
 </table>
 {% endblock %}
 {% block search_bar %}
-<form class="d-flex" method="POST" onsubmit="return add_user_data();">
+<form id="registerform" class="d-flex" method="POST" onsubmit="return add_user_data();">
   <div class="fname">
-      <input class="form-control me-2" type="text" placeholder="First Name" name="first_name" required>
+      <input class="form-control me-2" type="text" placeholder="First Name" id="first_name" required>
   </div>
 
   <br>
 
   <div class="lname">
-    <input class="form-control me-2" type="text" placeholder="Last Name" name="last_name" required>
+    <input class="form-control me-2" type="text" placeholder="Last Name" id="last_name" required>
 </div>
   
   <br>
 
   <div class="em">
-    <input class="form-control me-2" type="text" placeholder="Type email" name="email" required>
+    <input class="form-control me-2" type="text" placeholder="Type email" id="email" required>
   </div>
  
   <br>
 
   <div class="hp">
-    <input class="form-control me-2" type="text" placeholder="Type password" name="password" required>
+    <input class="form-control me-2" type="text" placeholder="Type password" id="password" required>
   </div>
 
   <button class="btn btn-outline-success" id="submit" type="submit">Register</button>
 </form>
 <span id="message"></span>
+<script>
+  var form = document.getElementById("registerform");
+  function handleForm(event) { event.preventDefault(); } 
+</script>
 {% endblock %}

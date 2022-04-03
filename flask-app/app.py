@@ -102,10 +102,6 @@ def login():
         resp = redirect("/", code=302) # redirect to homepage after successful login
         return get_response_with_user_cookie(resp, user)
 
-@app.route('/register')
-def register(): 
-    return render_template("register.html")
-
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path)
@@ -115,8 +111,11 @@ def send_favicon():
     return send_from_directory('static', 'images/favicon.png')
 
 #add user    
-@app.route('/users', methods=['POST'])
-def add_user():
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    if request.method == 'GET':
+        return render_template("register.html")
+    
     # getting name and email
     first_name = request.json.get('FirstName')
     last_name = request.json.get('LastName')
@@ -129,6 +128,8 @@ def add_user():
     # checking if user already exists
     next_id = db.engine.execute("SELECT MAX(UserID) FROM user;").first()[0] + 1
     user = User.query.filter_by(Email = email).first()
+
+    print(first_name, last_name, email, password)
  
     if not user:
         try:
@@ -152,6 +153,7 @@ def add_user():
             return make_response(responseObject, 200)
         except Exception as e:
             print(e)
+            print("here")
             responseObject = {
                 'status' : 'fail',
                 'message': 'Some error occured !!'
