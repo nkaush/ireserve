@@ -207,13 +207,10 @@ def search_users():
     users = None
 
     if searched_user is None: 
-        print("here")
         users = db.engine.execute("SELECT * FROM user u;")
     else: 
-        print('hello')
         print(searched_user)
         users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
-        print(dir(users))
 
     return render_template("users.html", route="users", queried_users=users)    
  
