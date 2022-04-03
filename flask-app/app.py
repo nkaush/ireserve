@@ -177,7 +177,7 @@ def reservations_for_user():
     
     return render_template("reservation.html", queried_reservations=reservations)
 
-@app.route('/reservations/popular_may21')
+@app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
     reservations = db.engine.execute(text(
         """
@@ -185,7 +185,7 @@ def get_popular_may21_reservations():
         FROM (SELECT * FROM room r NATURAL JOIN building b
         WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE :query)) AS tmp
         GROUP BY tmp.BuildingName
-        HAVING AVG(tmp.Popularity) > 50
+        HAVING AVG(tmp.Popularity) > 0
         ORDER BY AVG_POPULARITY DESC;
         """), query="2021-05%"
     )
