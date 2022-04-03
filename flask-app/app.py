@@ -68,13 +68,6 @@ def send_static(path):
 def send_favicon():
     return send_from_directory('static', 'images/favicon.png')
 
-# fetches all the users
-@app.route('/users', methods=['GET'])
-def view():
-    # fetches all the users
-    users = User.query.all()
-    return render_template("users.html", queried_users=users)
-
 #add user    
 @app.route('/users', methods=['POST'])
 def add_user():
@@ -215,10 +208,12 @@ def search_users():
 
     if searched_user is None: 
         print("here")
-        users = db.engine.execute("SELECT * FROM user u")
+        users = db.engine.execute("SELECT * FROM user u;")
     else: 
+        print('hello')
         print(searched_user)
         users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
+        print(dir(users))
 
     return render_template("users.html", route="users", queried_users=users)    
  
