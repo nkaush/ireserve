@@ -33,8 +33,8 @@
 {% block search_bar %}
 <form class="d-flex" method="POST" onsubmit="return search_room();" novalidate>
   <input class="form-control me-2" id="search_bar" type="search" placeholder="Search for buildings..." aria-label="Search">
-  <button class="btn btn-outline-success" id="search_rooms_button" >Search</button>
-  <!-- <input class="btn btn-outline-success" type="button" onclick="location.href='/rooms?building='+document.getElementById('search_bar').value;" value="Search" /> -->
+  <!-- <button class="btn btn-outline-success" id="search_rooms_button" >Search</button> -->
+  <input class="btn btn-outline-success" type="button" onclick="location.href='/rooms?building='+document.getElementById('search_bar').value;" value="Search" />
 </form>
 {% endblock %}
 {%block javascript %}
