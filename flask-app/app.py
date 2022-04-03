@@ -66,6 +66,7 @@ def get_response_with_user_cookie(response, user):
     return response
 
 @app.route('/')
+@app.route('/index')
 def home(): 
     user_cookie = get_user(request)
     print(user_cookie)
