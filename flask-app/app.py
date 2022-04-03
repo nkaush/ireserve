@@ -1,16 +1,16 @@
 # imports
 import os
-from flask import Flask, request, make_response, render_template, send_from_directory
+import json
+from flask import Flask, request, make_response, render_template, send_from_directory, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
 
 # Google Cloud SQL (change this accordingly)
-
 CLOUD_SQL_DATABASE_NAME = os.environ.get("CLOUD_SQL_DATABASE_NAME")
 CLOUD_SQL_USERNAME = os.environ.get("CLOUD_SQL_USERNAME")
-CLOUD_SQL_PASSWORD=os.environ.get("CLOUD_SQL_PASSWORD")
+CLOUD_SQL_PASSWORD = os.environ.get("CLOUD_SQL_PASSWORD")
 CLOUD_SQL_PUBLIC_IP_ADDRESS = os.environ.get("CLOUD_SQL_PUBLIC_IP_ADDRESS")
 CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 
@@ -46,13 +46,51 @@ class Reservation(db.Model):
     StartTime = db.Column(db.String(100), nullable = False)
     EndTime = db.Column(db.String(100), nullable = False)
 
+def get_user(request):
+    return json.loads(request.cookies.get('user'))
+
+def is_logged_in(request):
+    return request.cookies.get('user') is not None
+
+def jsonify_user(u):
+    return json.dumps({
+        "Email": u.Email,
+        "UserId": u.UserID,
+        "FirstName": u.FirstName,
+        "LastName": u.LastName
+    })
+
+def get_response_with_user_cookie(response, user):
+    if user is not None:
+        response.set_cookie('user', jsonify_user(user))
+    return response
+
 @app.route('/')
 def home(): 
-    return render_template("index.html")
+    user_cookie = get_user(request)
+    print(user_cookie)
+    return render_template("index.html", logged_in=is_logged_in(request))
 
-@app.route('/login')
-def login(): 
-    return render_template("login.html")
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template("login.html")
+    else:
+        email = request.json.get("email")
+        password = request.json.get("password")
+
+        email_seach_res = db.engine.execute(text("SELECT * FROM user u WHERE u.Email = :email;"), email=email)
+        
+        # verify user authenticity
+        if email_seach_res.rowcount == 0: # invalid email
+            return make_response({"message": "Invalid email and/or password."}, 401)
+
+        user = email_seach_res.first()
+        if user.HashedPassword != password: # invalid password
+            return make_response({"message": "Invalid email and/or password."}, 401)
+
+        resp = redirect("/", code=302) # redirect to homepage after successful login
+        return get_response_with_user_cookie(resp, user)
 
 @app.route('/register')
 def register(): 
@@ -122,8 +160,7 @@ def add_user():
 
 # All reservations   
 @app.route('/reservations')
-def get_all_buildings():
-    
+def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
     return render_template("reservation.html", queried_reservations=reservations)
 
@@ -158,7 +195,7 @@ def get_popular_may21_reservations():
     return render_template("reservations_may_popular.html", queried_reservations=reservations)
 
 #Search for room   
-@app.route('/rooms', methods =['GET'])
+@app.route('/rooms', methods=['GET'])
 def search_room():
     searched_building = request.args.get("building")
 
