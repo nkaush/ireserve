@@ -120,29 +120,6 @@ def add_user():
  
         return make_response(responseObject, 403)
 
-@app.route('/users/priority')
-def get_priority_users():
-    """Fetches all priority users."""
-
-    users = db.engine.execute(text(
-        """
-        (SELECT DISTINCT u.FirstName, u.LastName, u.Email
-        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
-        WHERE grp.GroupName LIKE :query
-        )
-        UNION
-        (SELECT u.FirstName, u.LastName, u.Email
-        FROM `user` u
-        WHERE u.UserID IN (SELECT r.UserID 
-                    FROM reservation r 
-                    GROUP BY r.UserID 
-                    HAVING COUNT(r.UserID) >= 7)
-        );
-        """), query='CS4__ %'
-    )
-
-    return render_template("users.html", queried_users=users)
-
 # All reservations   
 @app.route('/reservations')
 def get_all_buildings():
