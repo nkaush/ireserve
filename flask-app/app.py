@@ -47,7 +47,10 @@ class Reservation(db.Model):
     EndTime = db.Column(db.String(100), nullable = False)
 
 def get_user(request):
-    return json.loads(request.cookies.get('user'))
+    cookie = request.cookies.get('user')
+    if cookie is not None: 
+        return json.loads(cookie)
+    return None
 
 def is_logged_in(request):
     return request.cookies.get('user') is not None
@@ -71,6 +74,12 @@ def home():
     user_cookie = get_user(request)
     print(user_cookie)
     return render_template("index.html", logged_in=is_logged_in(request))
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    resp = redirect("/", code=302) # redirect to homepage after successful logout
+    resp.delete_cookie('username', path='/')
+    return resp
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
