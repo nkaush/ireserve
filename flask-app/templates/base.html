@@ -41,6 +41,12 @@
               </ul>
             </li>
           </ul>
+          {% if logged_in %}
+          <a href="/logout" class="btn btn-outline-danger d-flex me-2" type="submit">Log Out</a>
+          {% else %}
+          <a href="/login" class="btn btn-outline-success d-flex me-2" type="submit">Log In</a>
+          <a href="/register" class="btn btn-outline-success d-flex" type="submit">Register</a>
+          {% endif %}
         </div>
       </div>
     </nav>

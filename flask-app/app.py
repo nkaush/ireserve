@@ -13,6 +13,10 @@ CLOUD_SQL_USERNAME = os.environ.get("CLOUD_SQL_USERNAME")
 CLOUD_SQL_PASSWORD=os.environ.get("CLOUD_SQL_PASSWORD")
 CLOUD_SQL_PUBLIC_IP_ADDRESS = os.environ.get("CLOUD_SQL_PUBLIC_IP_ADDRESS")
 CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
+
+CLOUD_PORT = os.environ.get("PORT")
+if CLOUD_PORT is None:
+    CLOUD_PORT = os.environ.get("CLOUD_PORT")
  
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
@@ -42,90 +46,35 @@ class Reservation(db.Model):
     StartTime = db.Column(db.String(100), nullable = False)
     EndTime = db.Column(db.String(100), nullable = False)
 
-#Initial page
 @app.route('/')
 def home(): 
-    return render_template(
-        "main_page.html"
-    )
+    return render_template("index.html")
+
+@app.route('/login')
+def login(): 
+    return render_template("login.html")
+
+@app.route('/register')
+def register(): 
+    return render_template("register.html")
 
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path)
 
 @app.route('/favicon.ico')
-def send_resume():
+def send_favicon():
     return send_from_directory('static', 'images/favicon.png')
 
 # fetches all the users
-@app.route('/users')
+@app.route('/users', methods=['GET'])
 def view():
     # fetches all the users
     users = User.query.all()
     return render_template("users.html", queried_users=users)
 
-@app.route('/users/priority')
-def get_priority_users():
-    """Fetches all priority users."""
-
-    users = db.engine.execute(text(
-        """
-        (SELECT DISTINCT u.FirstName, u.LastName, u.Email
-        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
-        WHERE grp.GroupName LIKE :query
-        )
-        UNION
-        (SELECT u.FirstName, u.LastName, u.Email
-        FROM `user` u
-        WHERE u.UserID IN (SELECT r.UserID 
-                    FROM reservation r 
-                    GROUP BY r.UserID 
-                    HAVING COUNT(r.UserID) >= 7)
-        );
-        """), query='CS4__ %'
-    )
-
-    return render_template("users.html", queried_users=users)
-
-# All reservations   
-@app.route('/reservations')
-def get_all_buildings():
-    
-    reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
-    return render_template("reservation.html", queried_reservations=reservations)
-
-# Reservations for a user  
-@app.route('/reservations/user', methods =['GET'])
-def reservations_for_user():
-    user_id= request.args.get("userid")
-
-    print(user_id)
- 
-    # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;"), query="{}".format(user_id))
-    
-    return render_template("reservation.html", queried_reservations=reservations)
-
-@app.route('/reservations/popular_may21')
-def get_popular_may21_reservations():
-    reservations = db.engine.execute(text(
-        """
-        SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
-        FROM (SELECT * FROM room r NATURAL JOIN building b
-        WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE :query)) AS tmp
-        GROUP BY tmp.BuildingName
-        HAVING AVG(tmp.Popularity) > 50
-        ORDER BY AVG_POPULARITY DESC;
-        """), query="2021-05%"
-    )
-
-    print(dir(reservations))
-    print(reservations.rowcount)
-
-    return render_template("reservations_may_popular.html", queried_reservations=reservations)
-
 #add user    
-@app.route('/users/add', methods =['POST'])
+@app.route('/users', methods=['POST'])
 def add_user():
     # getting name and email
     first_name = request.json.get('FirstName')
@@ -178,6 +127,66 @@ def add_user():
  
         return make_response(responseObject, 403)
 
+@app.route('/users/priority')
+def get_priority_users():
+    """Fetches all priority users."""
+
+    users = db.engine.execute(text(
+        """
+        (SELECT DISTINCT u.FirstName, u.LastName, u.Email
+        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+        WHERE grp.GroupName LIKE :query
+        )
+        UNION
+        (SELECT u.FirstName, u.LastName, u.Email
+        FROM `user` u
+        WHERE u.UserID IN (SELECT r.UserID 
+                    FROM reservation r 
+                    GROUP BY r.UserID 
+                    HAVING COUNT(r.UserID) >= 7)
+        );
+        """), query='CS4__ %'
+    )
+
+    return render_template("users.html", queried_users=users)
+
+# All reservations   
+@app.route('/reservations')
+def get_all_buildings():
+    
+    reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
+    return render_template("reservation.html", queried_reservations=reservations)
+
+# Reservations for a user  
+@app.route('/reservations/user', methods=['GET'])
+def reservations_for_user():
+    user_id= request.args.get("userid")
+
+    print(user_id)
+
+    # checking for reservation
+    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;"), query="{}".format(user_id))
+    
+    return render_template("reservation.html", queried_reservations=reservations)
+
+@app.route('/reservations/popular_may21')
+def get_popular_may21_reservations():
+    reservations = db.engine.execute(text(
+        """
+        SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
+        FROM (SELECT * FROM room r NATURAL JOIN building b
+        WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE :query)) AS tmp
+        GROUP BY tmp.BuildingName
+        HAVING AVG(tmp.Popularity) > 50
+        ORDER BY AVG_POPULARITY DESC;
+        """), query="2021-05%"
+    )
+
+    print(dir(reservations))
+    print(reservations.rowcount)
+
+    return render_template("reservations_may_popular.html", queried_reservations=reservations)
+
 #Search for room   
 @app.route('/rooms', methods =['GET'])
 def search_room():
@@ -195,16 +204,19 @@ def search_room():
 
 #Search for user   
 @app.route('/users', methods =['GET'])
-def search_user():
+def search_users():
     searched_user = request.args.get("user")
+
+    print(searched_user)
 
     users = None
 
     if searched_user is None: 
-        users = db.engine.execute("SELECT * FROM User u")
+        print("here")
+        users = db.engine.execute("SELECT * FROM user u")
     else: 
         print(searched_user)
-        users = db.engine.execute(text("SELECT * FROM User u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
+        users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
 
     return render_template("users.html", route="users", queried_users=users)    
  
@@ -223,7 +235,7 @@ def delete_reservation():
     return make_response(responseObject, 200)
 
 #add reservation    
-@app.route('/reservation/add', methods =['POST'])
+@app.route('/reservation/add', methods=['POST'])
 def add_reservtaion():
     # getting components of reservation
 
@@ -245,12 +257,12 @@ def add_reservtaion():
             max_id = db.engine.execute("Select MAX(ReservationID) from reservation").first()[0]
             print(max_id)
             reservation = Reservation(
-                 ReservationID = (max_id + 1),
-                 RoomID = room_id,
-                 UserID = 10,
-                 GroupID = group_id,
-                 StartTime = start_time,
-                 EndTime = end_time
+                ReservationID = (max_id + 1),
+                RoomID = room_id,
+                UserID = 10,
+                GroupID = group_id,
+                StartTime = start_time,
+                EndTime = end_time
             )
             # adding the fields to users table
             db.session.add(reservation)
@@ -280,7 +292,11 @@ def add_reservtaion():
  
         return make_response(responseObject, 403)   
  
+def create_app():
+   return app
+   
 if __name__ == "__main__":
     # serving the app directly
-    app.run(host='0.0.0.0')
-
+    # app.run(host='0.0.0.0')
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=CLOUD_PORT)
