@@ -17,8 +17,6 @@ CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 CLOUD_PORT = os.environ.get("PORT")
 if CLOUD_PORT is None:
     CLOUD_PORT = os.environ.get("CLOUD_PORT")
-
-print("CLOUD_PORT =", CLOUD_PORT)
  
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
@@ -201,21 +199,37 @@ def search_room():
 @app.route('/users', methods =['GET'])
 def search_users():
     searched_user = request.args.get("user")
-
-    print(searched_user)
+    is_priority = request.args.get("priority")
 
     users = None
 
-    if searched_user is None: 
-        print("here")
+    if is_priority == "true":
+        if searched_user is None:
+            users = db.engine.execute(text(
+                """
+                (SELECT DISTINCT u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+                    WHERE grp.GroupName LIKE :query)
+                UNION (SELECT u.FirstName, u.LastName, u.Email FROM `user` u
+                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7));
+                """), query='CS4__ %'
+            )
+        else:
+            users = db.engine.execute(text(
+                """
+                (SELECT DISTINCT u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+                    WHERE grp.GroupName LIKE :query AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter))
+                UNION (SELECT u.FirstName, u.LastName, u.Email FROM `user` u
+                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7) 
+                    AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter) 
+                );
+                """), query='CS4__ %', filter="%{}%".format(searched_user)
+            )
+    elif searched_user is None: 
         users = db.engine.execute("SELECT * FROM user u;")
     else: 
-        print('hello')
-        print(searched_user)
         users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
-        print(dir(users))
 
-    return render_template("users.html", route="users", queried_users=users)    
+    return render_template("users.html", route="users", queried_users=users, is_priority=is_priority)    
  
 # Delete Reservation
 @app.route('/reservation/delete', methods=['DELETE'])
