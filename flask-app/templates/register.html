@@ -6,24 +6,52 @@
   </style> -->
 {% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col"></div>
-    <div class="col-6">
-      <!-- register card-->
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Register</h5>
-          <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </div>
-      </div>
-      <!-- register card-->
-    </div>
-    <div class="col"></div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in queried_users %}
+    <tr>
+      <th scope="row">{{loop.index}}</th>
+      <td>{{ u.FirstName }}</td>
+      <td>{{ u.LastName }}</td>
+      <td>{{ u.Email }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block search_bar %}
+<form class="d-flex" method="POST" onsubmit="return add_user_data();">
+  <div class="fname">
+      <input class="form-control me-2" type="text" placeholder="First Name" name="first_name" required>
   </div>
+
+  <br>
+
+  <div class="lname">
+    <input class="form-control me-2" type="text" placeholder="Last Name" name="last_name" required>
 </div>
+  
+  <br>
+
+  <div class="em">
+    <input class="form-control me-2" type="text" placeholder="Type email" name="email" required>
+  </div>
+ 
+  <br>
+
+  <div class="hp">
+    <input class="form-control me-2" type="text" placeholder="Type password" name="password" required>
+  </div>
+
+  <button class="btn btn-outline-success" id="submit" type="submit">Register</button>
+</form>
+<span id="message"></span>
 {% endblock %}
