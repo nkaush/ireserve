@@ -49,6 +49,10 @@ def home():
         "main_page.html"
     )
 
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
 @app.route('/favicon.ico')
 def send_resume():
     return send_from_directory('static', 'images/favicon.png')
@@ -64,24 +68,24 @@ def view():
 def get_priority_users():
     """Fetches all priority users."""
 
-    users = db.engine.execute(
+    users = db.engine.execute(text(
         """
-        (SELECT DISTINCT u.FirstName, u.LastName 
-        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp grp
-        WHERE grp.GroupName LIKE 'CS4__ %'
+        (SELECT DISTINCT u.FirstName, u.LastName, u.Email
+        FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+        WHERE grp.GroupName LIKE :query
         )
         UNION
-        (SELECT u.FirstName, u.LastName 
+        (SELECT u.FirstName, u.LastName, u.Email
         FROM `user` u
         WHERE u.UserID IN (SELECT r.UserID 
                     FROM reservation r 
                     GROUP BY r.UserID 
                     HAVING COUNT(r.UserID) >= 7)
         );
-        """
+        """), query='CS4__ %'
     )
 
-    return render_template("users_priority.html", queried_users=users)
+    return render_template("users.html", queried_users=users)
 
 # All reservations   
 @app.route('/reservations')
@@ -104,40 +108,47 @@ def reservations_for_user():
 
 @app.route('/reservations/popular_may21')
 def get_popular_may21_reservations():
-    reservations = db.engine.execute(
+    reservations = db.engine.execute(text(
         """
         SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
         FROM (SELECT * FROM room r NATURAL JOIN building b
-        WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE "2021-05%")) AS tmp
+        WHERE r.RoomID IN (SELECT res.RoomID FROM reservation res WHERE res.StartTime LIKE :query)) AS tmp
         GROUP BY tmp.BuildingName
         HAVING AVG(tmp.Popularity) > 50
         ORDER BY AVG_POPULARITY DESC;
-        """
+        """), query="2021-05%"
     )
+
+    print(dir(reservations))
+    print(reservations.rowcount)
+
     return render_template("reservations_may_popular.html", queried_reservations=reservations)
 
 #add user    
-@app.route('/Users/add', methods =['POST'])
+@app.route('/users/add', methods =['POST'])
 def add_user():
     # getting name and email
     first_name = request.json.get('FirstName')
+    last_name = request.json.get('LastName')
     email = request.json.get('Email')
+    password = request.json.get('HashedPassword')
 
     print(first_name)
     print(email)
  
     # checking if user already exists
+    next_id = db.engine.execute("SELECT MAX(UserID) FROM user;").first()[0] + 1
     user = User.query.filter_by(Email = email).first()
  
     if not user:
         try:
             # creating Users object
             user = User(
-                UserId = 1001,
+                UserId = next_id,
                 FirstName = first_name,
-                LastName = "",
+                LastName = last_name,
                 Email = email, 
-                HashedPassword = ""
+                HashedPassword = password
             )
             # adding the fields to users table
             db.session.add(user)
@@ -183,15 +194,18 @@ def search_room():
     return render_template("rooms.html", route="rooms", queried_rooms=rooms)
  
 # Delete Reservation
-@app.route('/reservation/delete', methods =['GET'])
+@app.route('/reservation/delete', methods=['DELETE'])
 def delete_reservation():
-    searched_reservation = request.args.get("ReservationId")
+    searched_reservation = request.json.get("ReservationID")
     rooms = db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(searched_reservation))
     
     reservations = db.engine.execute("SELECT * FROM reservation;")
+    responseObject = {
+        'status' : 'success',
+        'message': 'Successfully deleted reservation with id={}.'.format(searched_reservation)
+    }
 
-    return render_template("reservation_delete.html", queried_reservations=reservations)
-
+    return make_response(responseObject, 200)
 
 #add reservation    
 @app.route('/reservation/add', methods =['POST'])
@@ -201,7 +215,7 @@ def add_reservtaion():
     group_id = request.json.get('GroupID')
     room_id = request.json.get('RoomID')
     start_time = request.json.get('StartTime')
-    end_time = request.json.get('end_time')
+    end_time = request.json.get('EndTime')
 
     print(group_id)
     print(room_id)

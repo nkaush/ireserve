@@ -17,20 +17,16 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Reservation ID</th>
-          <th scope="col">Room ID</th>
-          <th scope="col">Start Time</th>
-          <th scope="col">End Time</th>
+          <th scope="col">Building Name</th>
+          <th scope="col">Average Popularity</th>
         </tr>
       </thead>
       <tbody>
-        {% for r in queries_reservations %}
+        {% for r in queried_reservations %}
         <tr>
           <th scope="row">{{loop.index}}</th>
-          <td>{{ r.ReservationID }}</td>
-          <td>{{ r.RoomID }}</td>
-          <td>{{ r.StartTime }}</td>
-          <td>{{ r.EndTime }}</td>
+          <td>{{ r.BuildingName }}</td>
+          <td>{{ r.AVG_POPULARITY }}</td>
         </tr>
         {% endfor %}
       </tbody>
