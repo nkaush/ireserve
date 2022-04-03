@@ -13,6 +13,10 @@ CLOUD_SQL_USERNAME = os.environ.get("CLOUD_SQL_USERNAME")
 CLOUD_SQL_PASSWORD=os.environ.get("CLOUD_SQL_PASSWORD")
 CLOUD_SQL_PUBLIC_IP_ADDRESS = os.environ.get("CLOUD_SQL_PUBLIC_IP_ADDRESS")
 CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
+
+CLOUD_PORT = os.environ.get("PORT")
+if CLOUD_PORT is None:
+    CLOUD_PORT = os.environ.get("CLOUD_PORT")
  
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
@@ -270,7 +274,11 @@ def search_room():
 
     return render_template("rooms.html", route="rooms", queried_rooms=rooms)
 
+def create_app():
+   return app
+   
 if __name__ == "__main__":
     # serving the app directly
-    app.run(host='0.0.0.0')
-
+    # app.run(host='0.0.0.0')
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=CLOUD_PORT)
