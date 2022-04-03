@@ -4,14 +4,9 @@ start:
 	docker build -t 411-app .
 	docker run -it --rm -p $(PORT):$(PORT) 411-app
 
-<<<<<<< HEAD
-local:
-	docker build -t 411-app -f Dockerfile-build .; docker run -it --rm -p 8080:8080 411-app
-=======
 develop:
 	docker build -t 411-develop -f Dockerfile-develop .
-	docker run -it --rm -p 8080:8080 -v `pwd`/flask-app:/flaskr 411-develop
->>>>>>> 63ce7b11819edcf8919e4036f609393f506117d1
+	docker run -it --rm -p 8080:8080 -v `pwd`\flask-app:\flaskr 411-develop
 
 build:
 	docker build -t neilk3/411-flask:latest -f Dockerfile-build .
