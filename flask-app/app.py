@@ -192,6 +192,21 @@ def search_room():
         rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
     return render_template("rooms.html", route="rooms", queried_rooms=rooms)
+
+#Search for user   
+@app.route('/users', methods =['GET'])
+def search_user():
+    searched_user = request.args.get("user")
+
+    users = None
+
+    if searched_user is None: 
+        users = db.engine.execute("SELECT * FROM User u")
+    else: 
+        print(searched_user)
+        users = db.engine.execute(text("SELECT * FROM User u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
+
+    return render_template("users.html", route="users", queried_users=users)    
  
 # Delete Reservation
 @app.route('/reservation/delete', methods=['DELETE'])
