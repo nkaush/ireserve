@@ -7,15 +7,15 @@
 {% endblock %}
 {% block content %}
 <h1>Make an Ireservation</h1>
-<form>
+<form id="reserveform" method="POST" onsubmit="return try_to_make_reservation();">
   <div class="form-group">
     <label for="exampleGroupId">Group ID</label>
-    <input type="groupid" class="form-control" id="groupid" placeholder="Enter Group ID">
+    <input type="text" class="form-control" id="groupid" placeholder="Enter Group ID">
     <br>
   </div>
   <div class="form-group">
     <label for="RoomID ">Room ID</label>
-    <input type="room id" class="form-control" id="roomid" placeholder="Room ID">
+    <input type="text" class="form-control" id="roomid" placeholder="Room ID">
     <br>
   </div>
   <div class="form-group">

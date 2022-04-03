@@ -78,7 +78,7 @@ def home():
 @app.route('/logout', methods=['GET'])
 def logout():
     resp = redirect("/", code=302) # redirect to homepage after successful logout
-    resp.delete_cookie('username', path='/')
+    resp.set_cookie('user', '', expires=0)
     return resp
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -285,7 +285,7 @@ def add_reservtaion():
     print(end_time)
  
     # checking if reservtaion already exists
-    reservation = Reservation.query.filter_by(GroupID = group_id, RoomID = room_id).first()
+    reservation = Reservation.query.filter_by(GroupID = group_id, RoomID = room_id, StartTime = start_time).first()
  
     if not reservation:
         try:
