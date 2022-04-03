@@ -267,6 +267,5 @@ def add_reservtaion():
  
 if __name__ == "__main__":
     # serving the app directly
-    print()
     app.run(host='0.0.0.0')
 
