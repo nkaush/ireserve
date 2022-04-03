@@ -6,7 +6,7 @@ start:
 
 develop:
 	docker build -t 411-develop -f Dockerfile-develop .
-	docker run -it --rm -p 8080:8080 -v `pwd`\flask-app:\flaskr 411-develop
+	docker run -it --rm -p 8080:8080 -v `pwd`/flask-app:/flaskr 411-develop
 
 build:
 	docker build -t neilk3/411-flask:latest -f Dockerfile-build .
