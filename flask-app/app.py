@@ -273,7 +273,7 @@ def delete_reservation():
 @app.route('/reservation/add', methods=['POST'])
 def add_reservtaion():
     # getting components of reservation
-
+    user = get_user(request)
     group_id = request.json.get('GroupID')
     room_id = request.json.get('RoomID')
     start_time = request.json.get('StartTime')
@@ -294,7 +294,7 @@ def add_reservtaion():
             reservation = Reservation(
                 ReservationID = (max_id + 1),
                 RoomID = room_id,
-                UserID = 10,
+                UserID = user["UserId"],
                 GroupID = group_id,
                 StartTime = start_time,
                 EndTime = end_time
@@ -325,7 +325,13 @@ def add_reservtaion():
             'message': 'User already exists !!'
         }
  
-        return make_response(responseObject, 403)   
+        return make_response(responseObject, 403)
+
+# Make a reservation  
+@app.route('/reserve', methods=['GET'])
+def make_reservation():
+    
+    return render_template("reserve.html")
  
 def create_app():
    return app
