@@ -34,8 +34,17 @@
 </table>
 {% endblock %}
 {% block search_bar %}
-<form class="d-flex">
-  <input class="form-control me-2" id="search_bar" type="search" placeholder="Search for reservations..." aria-label="Search">
-  <button class="btn btn-outline-success" type="submit">Search</button>
+<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
+  <input size="50" class="form-control me-2" type="search" placeholder="Search by reserver..." aria-label="Search" name="reserver">
+  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
+</form> 
+<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
+  <input class="form-control me-2" type="search" placeholder="Search by building..." aria-label="Search" name="building">
+  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
+</form> 
+<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
+  <input class="form-control me-2" type="search" placeholder="Search by associated group..." aria-label="Search" name="ag">
+  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
 </form>
+
 {% endblock %}
