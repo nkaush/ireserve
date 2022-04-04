@@ -284,17 +284,17 @@ def delete_reservation():
 def add_reservtaion():
     # getting components of reservation
 
-    email = request.json.get('Email')
-    #user = get_user(request)
+    #email = request.json.get('Email')
+    user = get_user(request)
     group_id = request.json.get('GroupID')
     room_id = request.json.get('RoomID')
     start_time = request.json.get('StartTime')
     end_time = request.json.get('EndTime')
 
-    userid = db.engine.execute(text("SELECT * FROM user u WHERE u.Email LIKE :query;"), query="%{}%".format(email))
-    user_id = userid.first().UserID
+    #userid = db.engine.execute(text("SELECT * FROM user u WHERE u.Email LIKE :query;"), query="%{}%".format(email))
+    #user_id = userid.first().UserID
 
-    print(user_id)
+    #print(user_id)
     print(group_id)
     print(room_id)
     print(start_time)
@@ -310,7 +310,7 @@ def add_reservtaion():
             reservation = Reservation(
                 ReservationID = (max_id + 1),
                 RoomID = room_id,
-                UserID = user_id,
+                UserID = user["UserID"],
                 GroupID = group_id,
                 StartTime = start_time,
                 EndTime = end_time
