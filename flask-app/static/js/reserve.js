@@ -1,7 +1,7 @@
 function try_to_make_reservation(event) {
   const url = "/reservation/add";
   const data = {
-    'Email' : document.getElementById('email').value,
+    // 'Email' : document.getElementById('email').value,
     'GroupID' : document.getElementById('groupid').value,
     'RoomID': document.getElementById('roomid').value,
     'StartTime': document.getElementById('starttime').value,
