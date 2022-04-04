@@ -1,18 +1,15 @@
-function add_user_data(event) {
-    const url = "/register";
+function delete_reservation(event) {
+    const url = "/reservation/delete";
     const data = {
-      'FirstName' : document.getElementById('first_name').value,
-      'LastName' : document.getElementById('last_name').value,
-      'Email' : document.getElementById('email').value,
-      'HashedPassword' : document.getElementById('password').value,
+      'ReservationID' : document.getElementById('reservation_id').value,
+      
     };
   
     console.log(data);
   
     fetch(url, {
-      "method": "POST",
+      "method": "DELETE",
       "mode" : "cors",
-      "redirect": "follow",
       "headers": {
           "Content-Type": "application/json; charset=UTF-8"
       },
@@ -22,6 +19,7 @@ function add_user_data(event) {
       console.log(response.url);
       if (response.redirected) {
         window.location.href = response.url;
+        window.location.reload();
       }
     })
     .catch(err => {

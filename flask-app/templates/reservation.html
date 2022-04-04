@@ -6,10 +6,25 @@
   </style> -->
 {% endblock %}
 {% block content %}
+
+{% if not no_delete %}
+<h3>Delete a Reservation</h3>
+<form id="registerform" method="POST" onsubmit="return delete_reservation();">
+  <div class="form-group">
+    <input type="text" class="form-control" id="reservation_id" placeholder="Reservation ID">
+    <br>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Delete</button>
+  <br>
+  <br>
+</form>
+<script src="/static/js/delete_reservation.js"></script>
+{% endif %}
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">#</th>
+      <th scope="col">ID</th>
       <th scope="col">Building</th>
       <th scope="col">Room Number</th>
       <th scope="col">Reserver</th>
@@ -21,7 +36,7 @@
   <tbody>
     {% for r in queried_reservations %}
     <tr>
-      <th scope="row">{{loop.index}}</th>
+      <th scope="row">{{ r.ReservationID }}</th>
       <td>{{ r.BuildingName }}</td>
       <td>{{ r.RoomNumber }}</td>
       <td>{{ r.FirstName }} {{ r.LastName }}</td>
@@ -34,17 +49,6 @@
 </table>
 {% endblock %}
 {% block search_bar %}
-<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
-  <input size="50" class="form-control me-2" type="search" placeholder="Search by reserver..." aria-label="Search" name="reserver">
-  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
-</form> 
-<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
-  <input class="form-control me-2" type="search" placeholder="Search by building..." aria-label="Search" name="building">
-  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
-</form> 
-<form class="d-flex" method="get" action="{{ url_for('search_users') }}">
-  <input class="form-control me-2" type="search" placeholder="Search by associated group..." aria-label="Search" name="ag">
-  <button class="btn btn-outline-success" id="search_users_button" type="submit">Search</button>
-</form>
+
 
 {% endblock %}

@@ -150,7 +150,10 @@ def register():
                 'message': 'Successfully registered.'
             }
  
-            return make_response(responseObject, 200)
+            # return make_response(responseObject, 200)
+
+            resp = redirect("/", code=302) # redirect to homepage after successful login
+            return get_response_with_user_cookie(resp, user)
         except Exception as e:
             print(e)
             print("here")
@@ -174,19 +177,24 @@ def register():
 @app.route('/reservations')
 def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
-    return render_template("reservation.html", queried_reservations=reservations)
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), no_delete=True)
 
 # Reservations for a user  
 @app.route('/reservations/user', methods=['GET'])
 def reservations_for_user():
-    user_id= request.args.get("userid")
+    user_cookie = get_user(request)
+    user_id = None
 
-    print(user_id)
+    if user_cookie is not None:
+        user_id = user_cookie['UserId']
+    # user_id= request.args.get("userid")
+
+    print(user_cookie)
 
     # checking for reservation
     reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;"), query="{}".format(user_id))
     
-    return render_template("reservation.html", queried_reservations=reservations)
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request))
 
 @app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
@@ -204,7 +212,7 @@ def get_popular_may21_reservations():
     print(dir(reservations))
     print(reservations.rowcount)
 
-    return render_template("reservations_may_popular.html", queried_reservations=reservations)
+    return render_template("reservations_may_popular.html", queried_reservations=reservations, logged_in=is_logged_in(request))
 
 #Search for room   
 @app.route('/rooms', methods=['GET'])
@@ -219,7 +227,7 @@ def search_room():
         print(searched_building)
         rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
-    return render_template("rooms.html", route="rooms", queried_rooms=rooms)
+    return render_template("rooms.html", route="rooms", queried_rooms=rooms, logged_in=is_logged_in(request))
 
 #Search for user   
 @app.route('/users', methods =['GET'])
@@ -255,7 +263,7 @@ def search_users():
     else: 
         users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
 
-    return render_template("users.html", route="users", queried_users=users, is_priority=is_priority)    
+    return render_template("users.html", route="users", queried_users=users, is_priority=is_priority, logged_in=is_logged_in(request))    
  
 # Delete Reservation
 @app.route('/reservation/delete', methods=['DELETE'])
@@ -339,8 +347,12 @@ def add_reservtaion():
 # Make a reservation  
 @app.route('/reserve', methods=['GET'])
 def make_reservation():
-    rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
-    return render_template("reserve.html", queried_rooms=rooms)
+    return render_template("reserve.html", logged_in=is_logged_in(request))
+
+# Make a reservation  
+@app.route('/delete_reservation', methods=['GET'])
+def delete_reservation_page():
+    return render_template("delete_reservation.html", logged_in=is_logged_in(request))
  
 def create_app():
    return app
