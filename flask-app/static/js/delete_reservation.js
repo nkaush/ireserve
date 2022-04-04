@@ -17,15 +17,19 @@ function delete_reservation(event) {
     })
     .then(function(response) {
       console.log(response.url);
-      location.reload();
-
-      if (response.redirected) {
-        window.location.href = response.url;
-      }
+      response.json().then((data) => {
+        document.getElementById('message').classList.add("success", "alert", "alert-success")
+        document.getElementById('message').innerHTML = data.message;
+      });
     })
     .catch(err => {
       console.error(err.message);
+      err.json().then((data) => {
+        console.log(data);
+        document.getElementById('message').classList.add("warning", "alert", "alert-warning")
+        document.getElementById('message').innerHTML = data.message;
+      });
     });
   
-    return true;
+    return false;
   }

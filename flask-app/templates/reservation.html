@@ -9,7 +9,7 @@
 
 {% if not no_delete %}
 <h3>Delete a Reservation</h3>
-<form id="registerform" method="POST" onsubmit="return delete_reservation();">
+<form id="registerform" method="DELETE" onsubmit="return delete_reservation();">
   <div class="form-group">
     <input type="text" class="form-control" id="reservation_id" placeholder="Reservation ID">
     <br>
@@ -19,6 +19,7 @@
   <br>
   <br>
 </form>
+<div id="message" class="" role="alert"></div>
 <script src="/static/js/delete_reservation.js"></script>
 {% endif %}
 <table class="table">
