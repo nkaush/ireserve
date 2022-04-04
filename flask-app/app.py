@@ -26,7 +26,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 
 class User(db.Model):
-    UserId = db.Column(db.Integer, primary_key = True, nullable = False)
+    UserID = db.Column(db.Integer, primary_key = True, nullable = False)
     FirstName = db.Column(db.String(255), nullable = False)
     LastName = db.Column(db.String(255), nullable = False)
     Email = db.Column(db.String(255), nullable = False)
@@ -58,7 +58,7 @@ def is_logged_in(request):
 def jsonify_user(u):
     return json.dumps({
         "Email": u.Email,
-        "UserId": u.UserID,
+        "UserID": u.UserID,
         "FirstName": u.FirstName,
         "LastName": u.LastName
     })
@@ -135,7 +135,7 @@ def register():
         try:
             # creating Users object
             user = User(
-                UserId = next_id,
+                UserID = next_id,
                 FirstName = first_name,
                 LastName = last_name,
                 Email = email, 
@@ -186,7 +186,7 @@ def reservations_for_user():
     user_id = None
 
     if user_cookie is not None:
-        user_id = user_cookie['UserId']
+        user_id = user_cookie['UserID']
     # user_id= request.args.get("userid")
 
     print(user_cookie)
