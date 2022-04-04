@@ -17,9 +17,9 @@ function delete_reservation(event) {
     })
     .then(function(response) {
       console.log(response.url);
+      window.location.reload();
       if (response.redirected) {
         window.location.href = response.url;
-        window.location.reload();
       }
     })
     .catch(err => {

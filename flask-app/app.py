@@ -347,7 +347,8 @@ def add_reservtaion():
 # Make a reservation  
 @app.route('/reserve', methods=['GET'])
 def make_reservation():
-    return render_template("reserve.html", logged_in=is_logged_in(request))
+    rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms)
 
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])
