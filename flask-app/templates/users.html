@@ -9,7 +9,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">#</th>
+      <th scope="col">User ID</th>
       <th scope="col">First</th>
       <th scope="col">Last</th>
       <th scope="col">Email</th>
@@ -18,7 +18,7 @@
   <tbody>
     {% for u in queried_users %}
     <tr>
-      <th scope="row">{{loop.index}}</th>
+      <th scope="row">{{ u.UserID }}</th>
       <td>{{ u.FirstName }}</td>
       <td>{{ u.LastName }}</td>
       <td>{{ u.Email }}</td>

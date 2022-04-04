@@ -241,18 +241,18 @@ def search_users():
         if searched_user is None:
             users = db.engine.execute(text(
                 """
-                (SELECT DISTINCT u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+                (SELECT DISTINCT u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
                     WHERE grp.GroupName LIKE :query)
-                UNION (SELECT u.FirstName, u.LastName, u.Email FROM `user` u
+                UNION (SELECT  u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u
                     WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7));
                 """), query='CS4__ %'
             )
         else:
             users = db.engine.execute(text(
                 """
-                (SELECT DISTINCT u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
+                (SELECT DISTINCT u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
                     WHERE grp.GroupName LIKE :query AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter))
-                UNION (SELECT u.FirstName, u.LastName, u.Email FROM `user` u
+                UNION (SELECT  u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u
                     WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7) 
                     AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter) 
                 );
