@@ -6,56 +6,41 @@
   </style> -->
 {% endblock %}
 {% block content %}
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for u in queried_users %}
-    <tr>
-      <th scope="row">{{loop.index}}</th>
-      <td>{{ u.FirstName }}</td>
-      <td>{{ u.LastName }}</td>
-      <td>{{ u.Email }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endblock %}
-{% block search_bar %}
-<form id="registerform" class="d-flex" method="POST" onsubmit="return add_user_data();">
-  <div class="fname">
-      <input class="form-control me-2" type="text" placeholder="First Name" id="first_name" required>
+<h1>Register</h1>
+<form id="registerform" method="POST" onsubmit="return add_user_data();">
+  <div class="form-group">
+    <label for="firstName">First Name</label>
+    <input type="text" class="form-control" id="first_name" placeholder="Enter First Name">
+    <br>
   </div>
 
-  <br>
+  <div class="form-group">
+    <label for="lastName">Last Name</label>
+    <input type="text" class="form-control" id="last_name" placeholder="Enter Last Name">
+    <br>
+  </div>
 
-  <div class="lname">
-    <input class="form-control me-2" type="text" placeholder="Last Name" id="last_name" required>
-</div>
+  <div class="form-group">
+    <label for="exampleEmail">Email</label>
+    <input type="text" class="form-control" id="email" placeholder="Enter Email">
+    <br>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password </label>
+    <input type="text" class="form-control" id="password" placeholder="Enter Password">
+    <br>
+  </div>
   
-  <br>
-
-  <div class="em">
-    <input class="form-control me-2" type="text" placeholder="Type email" id="email" required>
+  <div class="form-group">
+    <label for="confirm_password">Confirm</label>
+    <input type="text" class="form-control" id="confirm_password" placeholder="Enter Password Again">
+    <br>
   </div>
- 
+  
+  <button type="submit" class="btn btn-primary">Submit</button>
   <br>
-
-  <div class="hp">
-    <input class="form-control me-2" type="text" placeholder="Type password" id="password" required>
-  </div>
-
-  <button class="btn btn-outline-success" id="submit" type="submit">Register</button>
+  <br>
 </form>
-<span id="message"></span>
-<script>
-  var form = document.getElementById("registerform");
-  function handleForm(event) { event.preventDefault(); } 
-</script>
+<script src="/static/js/add_user_data.js"></script>
 {% endblock %}
