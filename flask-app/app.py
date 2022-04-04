@@ -354,6 +354,28 @@ def make_reservation():
 @app.route('/delete_reservation', methods=['GET'])
 def delete_reservation_page():
     return render_template("delete_reservation.html", logged_in=is_logged_in(request))
+
+# Update name page
+@app.route('/users_update', methods=['GET'])
+def update_user_page():
+    return render_template("users_update.html", logged_in=is_logged_in(request))
+    
+# Update name
+@app.route('/users/update', methods=['POST'])
+def update_user():
+    first_name = request.json.get("FirstName")
+    last_name = request.json.get("LastName")
+    user = get_user(request)
+    user_id = user["UserID"]
+    user_update = db.engine.execute("UPDATE user u SET u.FirstName = {}, u.LastName = {} WHERE u.UserID = {};".format(first_name, last_name, user_id))
+    print(user_id)
+    print(first_name)
+    print(last_name)
+    responseObject = {
+        'status' : 'success',
+        'message': 'Successfully update name'
+    }
+    return make_response(responseObject, 200)
  
 def create_app():
    return app
