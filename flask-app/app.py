@@ -294,7 +294,7 @@ def add_reservtaion():
  
     # checking if reservtaion already exists
     reservation = Reservation.query.filter_by(GroupID = group_id, RoomID = room_id, StartTime = start_time).first()
- 
+    
     if not reservation:
         try:
             max_id = db.engine.execute("Select MAX(ReservationID) from reservation").first()[0]
@@ -311,9 +311,10 @@ def add_reservtaion():
             db.session.add(reservation)
             db.session.commit()
             # response
+            room = db.engine.execute(text("select RoomNumber, BuildingName from room NATURAL JOIN building WHERE RoomID=:rid"), rid=room_id).first()
             responseObject = {
                 'status' : 'success',
-                'message': 'Successfully registered.'
+                'message': 'Successfully reserved room {} in {}.'.format(room.RoomNumber, room.BuildingName)
             }
  
             return make_response(responseObject, 200)
@@ -321,7 +322,7 @@ def add_reservtaion():
             print(e)
             responseObject = {
                 'status' : 'fail',
-                'message': 'Some error occured !!'
+                'message': 'Some error occured.'
             }
  
             return make_response(responseObject, 400)
@@ -330,7 +331,7 @@ def add_reservtaion():
         # if user already exists then send status as fail
         responseObject = {
             'status' : 'fail',
-            'message': 'User already exists !!'
+            'message': 'Reservation already exists.'
         }
  
         return make_response(responseObject, 403)
@@ -338,8 +339,8 @@ def add_reservtaion():
 # Make a reservation  
 @app.route('/reserve', methods=['GET'])
 def make_reservation():
-    
-    return render_template("reserve.html")
+    rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
+    return render_template("reserve.html", queried_rooms=rooms)
  
 def create_app():
    return app

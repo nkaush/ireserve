@@ -20,12 +20,19 @@ function try_to_make_reservation(event) {
   })
   .then(function(response) {
     console.log(response.url);
-    if (response.redirected) {
-      window.location.href = response.url;
-    }
+    response.json().then((data) => {
+      console.log(data);
+      document.getElementById('message').classList.add("primary")
+      document.getElementById('message').innerHTML = data.message;
+    });
   })
   .catch(err => {
     console.error(err.message);
+    err.json().then((data) => {
+      console.log(data);
+      document.getElementById('message').classList.add("warning")
+      document.getElementById('message').innerHTML = data.message;
+    });
   });
 
   return false;

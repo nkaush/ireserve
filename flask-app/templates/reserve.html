@@ -6,42 +6,67 @@
   </style> -->
 {% endblock %}
 {% block content %}
-<h1>Make an Ireservation</h1>
-<form id="reserveform" method="POST" onsubmit="return try_to_make_reservation();">
-  <div class="form-group">
-    <label for="exampleEmail">Email</label>
-    <input type="text" class="form-control" id="email" placeholder="Enter Email">
+<h1>Make an Reservation</h1>
+<div class="card">
+  <div class="card-body">
+    <form id="reserveform" method="POST" onsubmit="return try_to_make_reservation();">
+      <div class="form-group mb-3">
+        <input type="text" class="form-control" id="email" placeholder="Email">
+      </div>
+      <div class="form-group mb-3">
+        <input type="text" class="form-control" id="groupid" placeholder="Group ID">
+      </div>
+      <div class="form-group mb-3">
+        <input type="text" class="form-control" id="roomid" placeholder="Room ID">
+      </div>
+      <div class="form-group mb-3">
+        <label for="meeting-time">Choose a start time for your reservation:</label>
+    
+        <input type="datetime-local" id="starttime"
+          min="2022-04-01T00:00" max="2022-048-1T00:00" placeholder="Start Time" class="form-control">
+          
+      </div>
+      <div class="form-group mb-3">
+        <label for="meeting-time">Choose a end time for your reservation:</label>
+    
+        <input type="datetime-local" id="endtime"
+              min="2022-04-01T00:00" max="2022-048-1T00:00" placeholder="End Time" class="form-control">
+          
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
     <br>
-  </div>
-  <div class="form-group">
-    <label for="exampleGroupId">Group ID</label>
-    <input type="text" class="form-control" id="groupid" placeholder="Enter Group ID">
-    <br>
-  </div>
-  <div class="form-group">
-    <label for="RoomID ">Room ID</label>
-    <input type="text" class="form-control" id="roomid" placeholder="Room ID">
-    <br>
-  </div>
-  <div class="form-group">
-    <label for="meeting-time">Choose a start time for your reservation:</label>
-
-    <input type="datetime-local" id="starttime" value="2018-06-12T19:30"
-      min="2022-04-01T00:00" max="2022-048-1T00:00" placeholder="Start Time" class="form-control">
+    <div hidden id="message hidden" class="alert alert-primary" role="alert">
       
-    <br>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="meeting-time">Choose a end time for your reservation:</label>
-
-    <input type="datetime-local" id="endtime" value="2018-06-12T19:30"
-          min="2022-04-01T00:00" max="2022-048-1T00:00" placeholder="End Time" class="form-control">
-      
-    <br>
+</div>
+<div class="card mt-3">
+  <div class="card-body">
+    <h3>Rooms Available</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Room ID</th>
+          <th scope="col">Building Name</th>
+          <th scope="col">Room Number</th>
+          <th scope="col">Capacity</th>
+          <th scope="col">Popularity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in queried_rooms %}
+        <tr>
+          <th scope="row">{{ r.RoomID }}</th>
+          <td>{{ r.BuildingName }}</td>
+          <td>{{ r.RoomNumber }}</td>
+          <td>{{ r.RoomCapacity }}</td>
+          <td>{{ r.Popularity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-  <br>
-  <br>
-</form>
+</div>
 <script src="/static/js/reserve.js"></script>
 {% endblock %}
