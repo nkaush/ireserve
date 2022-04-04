@@ -367,10 +367,10 @@ def update_user():
     last_name = request.json.get("LastName")
     user = get_user(request)
     user_id = user["UserID"]
-    user_update = db.engine.execute("UPDATE user u SET u.FirstName = {}, u.LastName = {} WHERE u.UserID = {};".format(first_name, last_name, user_id))
+    user_update = db.engine.execute("UPDATE user SET FirstName = \'{}\', LastName = \'{}\' WHERE UserID = {};".format(first_name, last_name, user_id))
     print(user_id)
     print(first_name)
-    print(last_name)
+    print(last_name) # FirstNmame = 'Johnny'
     responseObject = {
         'status' : 'success',
         'message': 'Successfully update name'

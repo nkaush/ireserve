@@ -2,7 +2,7 @@ function update_name(event) {
   const url = "/users/update";
   const data = {
     'FirstName': document.getElementById('firstname').value,
-    'LastName': document.getElementById('lastname').value
+    'LastName': document.getElementById('lastname').value,
   };
 
   console.log(data);
