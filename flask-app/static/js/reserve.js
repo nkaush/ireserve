@@ -22,7 +22,7 @@ function try_to_make_reservation(event) {
     console.log(response.url);
     response.json().then((data) => {
       console.log(data);
-      document.getElementById('message').classList.add("primary")
+      document.getElementById('message').classList.add("success", "alert", "alert-success")
       document.getElementById('message').innerHTML = data.message;
     });
   })
@@ -30,7 +30,7 @@ function try_to_make_reservation(event) {
     console.error(err.message);
     err.json().then((data) => {
       console.log(data);
-      document.getElementById('message').classList.add("warning")
+      document.getElementById('message').classList.add("warning", "alert", "alert-warning")
       document.getElementById('message').innerHTML = data.message;
     });
   });
