@@ -340,6 +340,12 @@ def add_reservtaion():
 def make_reservation():
     
     return render_template("reserve.html")
+
+# Make a reservation  
+@app.route('/delete_reservation', methods=['GET'])
+def delete_reservation_page():
+    
+    return render_template("delete_reservation.html")
  
 def create_app():
    return app
