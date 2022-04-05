@@ -20,18 +20,33 @@ function try_to_make_reservation(event) {
   })
   .then(function(response) {
     console.log(response.url);
-    response.json().then((data) => {
-      console.log(data);
-      document.getElementById('message').classList.add("success", "alert", "alert-success")
-      document.getElementById('message').innerHTML = data.message;
-    });
+    
+    if (response.status < 400) {
+      response.json().then((data) => {
+        console.log(data);
+        var msg = document.getElementById('message');
+        msg.className = "";
+        msg.classList.add("success", "alert", "alert-success")
+        msg.innerHTML = data.message;
+      });
+    } else {
+      response.json().then((data) => {
+        console.log(data);
+        var msg = document.getElementById('message');
+        msg.className = "";
+        msg.classList.add("warning", "alert", "alert-warning")
+        msg.innerHTML = data.message;
+      });
+    }
   })
   .catch(err => {
     console.error(err.message);
     err.json().then((data) => {
       console.log(data);
-      document.getElementById('message').classList.add("warning", "alert", "alert-warning")
-      document.getElementById('message').innerHTML = data.message;
+      var msg = document.getElementById('message');
+      msg.className = "";
+      msg.classList.add("warning", "alert", "alert-warning")
+      msg.innerHTML = data.message;
     });
   });
 
