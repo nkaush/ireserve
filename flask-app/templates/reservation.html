@@ -6,50 +6,57 @@
   </style> -->
 {% endblock %}
 {% block content %}
-
-{% if not no_delete %}
-<h3>Delete a Reservation</h3>
-<form id="registerform" method="DELETE" onsubmit="return delete_reservation();">
-  <div class="form-group">
-    <input type="text" class="form-control" id="reservation_id" placeholder="Reservation ID">
-    <br>
-  </div>
-  
-  <button type="submit" class="btn btn-primary">Delete</button>
-  <br>
-  <br>
-</form>
 <div id="message" class="" role="alert"></div>
-<script src="/static/js/delete_reservation.js"></script>
-{% endif %}
 <table class="table">
   <thead>
     <tr>
       <th scope="col">ID</th>
       <th scope="col">Building</th>
-      <th scope="col">Room Number</th>
+      <th scope="col">Room</th>
       <th scope="col">Reserver</th>
       <th scope="col">Associated Group</th>
       <th scope="col">Start Time</th>
       <th scope="col">End Time</th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     {% for r in queried_reservations %}
-    <tr>
-      <th scope="row">{{ r.ReservationID }}</th>
-      <td>{{ r.BuildingName }}</td>
-      <td>{{ r.RoomNumber }}</td>
-      <td>{{ r.FirstName }} {{ r.LastName }}</td>
-      <td>{{ r.GroupName }}</td>
-      <td>{{ r.StartTime }}</td>
-      <td>{{ r.EndTime }}</td>
+    <tr id="table-row-{{ r.ReservationID }}">
+      <th class="align-middle" scope="row">{{ r.ReservationID }}</th>
+      <td class="align-middle">{{ r.BuildingName }}</td>
+      <td class="align-middle">{{ r.RoomNumber }}</td>
+      <td class="align-middle">{{ r.FirstName }} {{ r.LastName }}</td>
+      <td class="align-middle">{{ r.GroupName }}</td>
+      <td class="align-middle">{{ r.StartTime }}</td>
+      <td class="align-middle">{{ r.EndTime }}</td>
+      <td class="align-middle">
+        <button type="button" class="btn btn-outline-danger d-flex me-2" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-rid="{{ r.ReservationID }}" meta-data-rnum="{{ r.RoomNumber }}" meta-data-building="{{ r.BuildingName }}" meta-data-start="{{ r.StartTime }}">Delete</button>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+<!-- DELETE CONFIRMATION-->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Delete Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <form id="delete_res_form" onsubmit="return delete_reservation(event);">
+          <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/js/delete_reservation.js"></script>
+<!-- DELETE CONFIRMATION-->
 {% endblock %}
 {% block search_bar %}
-
-
 {% endblock %}

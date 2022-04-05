@@ -251,30 +251,28 @@ def search_users():
             users = db.engine.execute(text(
                 """
                 (SELECT DISTINCT u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
-                    WHERE grp.GroupName LIKE :query AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter))
+                    WHERE grp.GroupName LIKE :query AND (CONCAT(u.FirstName, ' ', u.LastName) LIKE :filter))
                 UNION (SELECT  u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u
                     WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7) 
-                    AND (u.FirstName LIKE :filter OR u.LastName LIKE :filter) 
+                    AND (CONCAT(u.FirstName, ' ', u.LastName) LIKE :filter) 
                 );
                 """), query='CS4__ %', filter="%{}%".format(searched_user)
             )
     elif searched_user is None: 
         users = db.engine.execute("SELECT * FROM user u;")
     else: 
-        users = db.engine.execute(text("SELECT * FROM user u WHERE u.FirstName LIKE :query;"), query="%{}%".format(searched_user))
+        users = db.engine.execute(text("SELECT * FROM user u WHERE CONCAT(u.FirstName, ' ', u.LastName) LIKE :query;"), query="%{}%".format(searched_user))
 
     return render_template("users.html", route="users", queried_users=users, is_priority=is_priority, logged_in=is_logged_in(request))    
  
 # Delete Reservation
-@app.route('/reservation/delete', methods=['DELETE'])
-def delete_reservation():
-    searched_reservation = request.json.get("ReservationID")
-    rooms = db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(searched_reservation))
+@app.route('/reservation/<int:reservation_id>', methods=['DELETE'])
+def delete_reservation(reservation_id):
+    db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(reservation_id))
     
-    reservations = db.engine.execute("SELECT * FROM reservation;")
     responseObject = {
         'status' : 'success',
-        'message': 'Successfully deleted reservation with id={}.'.format(searched_reservation)
+        'message': 'Successfully deleted reservation with ID = {}.'.format(reservation_id)
     }
 
     return make_response(responseObject, 200)
