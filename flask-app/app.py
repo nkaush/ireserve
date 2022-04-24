@@ -107,8 +107,15 @@ def add_reservation():
 # Make a reservation  
 @app.route('/reserve', methods=['GET'])
 def make_reservation():
+    user_cookie = get_user(request)
+    user_id = -1
+
+    if user_cookie is not None:
+        user_id = user_cookie['UserID']
+
     rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
-    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms)
+    groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups)
 
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])

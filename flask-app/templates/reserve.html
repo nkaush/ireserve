@@ -13,15 +13,21 @@
       <!-- <div class="form-group mb-3">
         <input type="text" class="form-control" id="email" placeholder="Email">
       </div> -->
-      <div class="form-group mb-3">
+      <!-- <div class="form-group mb-3">
         <input type="text" class="form-control" id="groupid" placeholder="Group ID">
-      </div>
+      </div> -->
+      <label for="groupid">Choose a group to make a reservation under:</label>
+      <select id="groupid" class="form-select mb-3" aria-label="Select a Group">
+        <option selected="true" disabled="disabled"></option>
+        {% for group in user_groups %}
+        <option value="{{ group.GroupID }}">{{ group.GroupName }}</option>
+        {% endfor %}
+      </select>
       <div class="form-group mb-3">
         <input type="text" class="form-control" id="roomid" placeholder="Room ID">
       </div>
       <div class="form-group mb-3">
         <label for="meeting-time">Choose a start time for your reservation:</label>
-    
         <input type="datetime-local" id="starttime"
           min="2022-04-01T00" step="3600" placeholder="Start Time" class="form-control">
           
