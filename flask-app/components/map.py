@@ -1,3 +1,4 @@
+from calendar import c
 from flask import render_template, make_response
 from .utils import is_logged_in, get_user
 from sqlalchemy import text
@@ -8,14 +9,24 @@ def create_map(db):
     # Make an empty map
     m = folium.Map(location=[20,0], tiles="OpenStreetMap", zoom_start=2)
 
-    reservations = db.engine.execute("SELECT `BuildingName`, COUNT(`BuildingName`) FROM `reservation` NATURAL JOIN `room` NATURAL JOIN `building` GROUP BY `BuildingName`;")
-    print(reservations)
+    reservations = db.engine.execute("SELECT `BuildingName`, COUNT(`BuildingName`) AS res_count FROM `reservation` NATURAL JOIN `room` NATURAL JOIN `building` GROUP BY `BuildingName` ORDER BY `BuildingName`;")
+    buildings = []
+    counts = []
+
+    for r in reservations:
+        counts.append(r.res_count)
+        buildings.append(r.BuildingName)
+    
+    print(counts)
+    print(buildings)
+
+    print(len(counts), len(buildings))
     
     data = pd.DataFrame({
    'lon':[-58, 2, 145, 30.32, -4.03, -73.57, 36.82, -38.5],
    'lat':[-34, 49, -38, 59.93, 5.33, 45.52, -1.29, -12.97],
-   'name':['Wassaja', 'Nugent', 'Hopkins', 'Wardell', 'Townsend', 'Weston', 'Scott', 'Bousfeild'], #,'CARR', 'Saunders', 'Babcock', 'Oglesby', 'Trelease'
-   'value':[10, 12, 40, 70, 23, 43, 100, 43]
+   'name': buildings,
+   'value': counts
     }, dtype=str)
 
     # add marker one by one on the map
