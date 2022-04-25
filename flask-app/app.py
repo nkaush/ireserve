@@ -6,6 +6,7 @@ import os
 from components.utils import is_logged_in, get_user
 import components.reservation as comp_res
 import components.user_logic as comp_ul
+import components.map
 
 app = Flask(__name__)
 
@@ -136,7 +137,13 @@ def search_room():
         rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
     return render_template("rooms.html", route="rooms", queried_rooms=rooms, logged_in=is_logged_in(request))
- 
+
+#Show reservation map  
+@app.route('/map', methods=['GET'])
+def display_reservation_map():
+    map.create_map(db)
+    return render_template('flask-app\static\images\map.html', route="map", logged_in=is_logged_in(request))
+
 def create_app():
    return app
    
