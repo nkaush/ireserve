@@ -14,7 +14,7 @@ def create_map(db):
     data = pd.DataFrame({
    'lon':[-58, 2, 145, 30.32, -4.03, -73.57, 36.82, -38.5],
    'lat':[-34, 49, -38, 59.93, 5.33, 45.52, -1.29, -12.97],
-   'name':['Wassaja', 'Nugent', 'Hopkins', 'Wardell', 'Townsend', 'Westin', 'Scott', 'Bousfeild'], #,'CARR', 'Saunders', 'Babcock', 'Oglesby', 'Trelease'
+   'name':['Wassaja', 'Nugent', 'Hopkins', 'Wardell', 'Townsend', 'Weston', 'Scott', 'Bousfeild'], #,'CARR', 'Saunders', 'Babcock', 'Oglesby', 'Trelease'
    'value':[10, 12, 40, 70, 23, 43, 100, 43]
     }, dtype=str)
 
@@ -30,8 +30,4 @@ def create_map(db):
         ).add_to(m)
 
     # Save map  
-    m.save('flask-app\static\images\map.html')
-
-
-
-
+    m.save('templates/map.html')

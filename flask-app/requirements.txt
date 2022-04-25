@@ -1,4 +1,5 @@
 flask
+folium
 flask_sqlalchemy
 mysqlclient
 python-dotenv

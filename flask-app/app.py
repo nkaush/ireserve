@@ -6,7 +6,7 @@ import os
 from components.utils import is_logged_in, get_user
 import components.reservation as comp_res
 import components.user_logic as comp_ul
-import components.map
+import components.map as comp_map
 
 app = Flask(__name__)
 
@@ -25,8 +25,6 @@ if CLOUD_PORT is None:
 app.config["SECRET_KEY"] = "yoursecretkey"
 app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-
-print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 db = SQLAlchemy(app)
 
@@ -143,8 +141,8 @@ def search_room():
 #Show reservation map  
 @app.route('/map', methods=['GET'])
 def display_reservation_map():
-    map.create_map(db)
-    return render_template('flask-app\static\images\map.html', route="map", logged_in=is_logged_in(request))
+    comp_map.create_map(db)
+    return render_template('map.html', route="map", logged_in=is_logged_in(request))
 
 def create_app():
    return app
