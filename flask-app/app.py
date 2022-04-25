@@ -22,8 +22,10 @@ if CLOUD_PORT is None:
 
 # configuration
 app.config["SECRET_KEY"] = "yoursecretkey"
-app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+mysqldb://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+
+print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 db = SQLAlchemy(app)
 

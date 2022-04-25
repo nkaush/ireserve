@@ -1,0 +1,17 @@
+FROM python:3.9.12-bullseye
+
+RUN apt-get update && apt-get -y dist-upgrade
+
+RUN apt-get install mysql-server
+
+COPY /flask-app/ /flaskr
+
+WORKDIR /flaskr
+
+EXPOSE 8080
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT [ "/bin/sh" ]
+
+CMD [ "runner.sh" ]

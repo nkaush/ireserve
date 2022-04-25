@@ -24,4 +24,4 @@ waitress:
 # gcloud config set project cs-411-final-project-342117
 gcp-deploy:
 	gcloud builds submit --tag gcr.io/cs-411-final-project-342117/ireserve
-	gcloud run deploy --image gcr.io/cs-411-final-project-342117/ireserve --platform managed
+	gcloud run deploy --image gcr.io/cs-411-final-project-342117/ireserve --add-cloudsql-instances=cs-411-final-project-342117:us-central1:preql --platform managed

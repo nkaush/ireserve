@@ -3,3 +3,4 @@ flask_sqlalchemy
 mysqlclient
 python-dotenv
 waitress
+mysql-connector-python
