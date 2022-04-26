@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response, render_template, send_from_directory, redirect
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 from sqlalchemy import text
 import os
 
@@ -8,6 +9,7 @@ import components.reservation as comp_res
 import components.user_logic as comp_ul
 import components.map as comp_map
 
+load_dotenv('.env')
 app = Flask(__name__)
 
 # Google Cloud SQL (change this accordingly)
@@ -115,20 +117,26 @@ def make_reservation():
     searched_time = request.args.get("start")
     rooms = None
 
+    if not (searched_time is None or searched_time == ""):
+        searched_time = ' '.join(searched_time.split('T')) + ":00"
     print("time:", searched_time)
 
     if searched_time is None or searched_time == "":
         rooms = [] 
     elif searched_building is None: 
-        rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room ORDER BY Popularity DESC;")
+        rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room r WHERE NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;")
     else: 
         print(searched_building)
-        rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
+        rooms = db.engine.execute(text(f"SELECT * FROM building b NATURAL JOIN room r WHERE b.BuildingName LIKE :query AND NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
 
     if user_cookie is not None:
         user_id = user_cookie['UserID']
 
+    if searched_building is None:
+        searched_building = ""
+    
     groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
+    print(user_id, groups, groups.rowcount)
     return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building)
 
 # Make a reservation  

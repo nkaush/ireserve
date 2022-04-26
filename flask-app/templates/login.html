@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 {% block head %}
-  <!-- {{ super() }} -->
-  <!-- <style type="text/css">
-    .important { color: #336699; }
-  </style> -->
-{% endblock %}
-{% block content %}
 <style>
   body {
-  background-image: url('/static/images/uiucbackground.webp');
-  background-size: cover;
-}
+    background-image: url('/static/images/uiucbackground.webp');
+    background-size: cover;
+  }
 </style>
+{% endblock %}
+{% block content %}
 <div class="row justify-content-md-center">
   <div class="col col-lg-2"></div>
   <div class="col-md-auto">
@@ -50,12 +46,8 @@
               </div>
             </div>
             
-            <div class="row justify-content-md-center">
-              <div class="col col-lg-2"></div>
-              <div class="col-md-auto">
-                <button class="btn btn-outline-success" id="submit" type="submit">Log In</button>
-              </div>
-              <div class="col col-lg-2"></div>
+            <div class="row justify-content-md-center px-2 my-3">
+              <button class="btn btn-outline-success btn-block" id="submit" type="submit">Log In</button>
             </div>
            
           </form>
@@ -66,7 +58,6 @@
     <div class="col"></div>
   </div>
 </div>
-
 <div class="container my-2">
   <div class="row">
     <div class="col"></div>
