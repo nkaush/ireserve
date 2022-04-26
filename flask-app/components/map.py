@@ -7,7 +7,7 @@ import pandas as pd
 
 def create_map(db):
     # Make an empty map
-    m = folium.Map(location=[20,0], tiles="OpenStreetMap", zoom_start=2)
+    m = folium.Map(location=[40.105, -88.228], tiles="OpenStreetMap", zoom_start=16)
 
     reservations = db.engine.execute("SELECT `BuildingName`, COUNT(`BuildingName`) AS res_count FROM `reservation` NATURAL JOIN `room` NATURAL JOIN `building` GROUP BY `BuildingName` ORDER BY `BuildingName`;")
     buildings = []
