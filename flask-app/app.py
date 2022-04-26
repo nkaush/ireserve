@@ -116,9 +116,11 @@ def make_reservation():
     searched_building = request.args.get("building")
     searched_time = request.args.get("start")
     rooms = None
+    start_preserved = None
 
     if not (searched_time is None or searched_time == ""):
         searched_time = ' '.join(searched_time.split('T')) + ":00"
+        start_preserved = 'T'.join(searched_time.split(' '))
     print("time:", searched_time)
 
     if searched_time is None or searched_time == "":
@@ -137,7 +139,8 @@ def make_reservation():
     
     groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
     print(user_id, groups, groups.rowcount)
-    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building)
+    
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved)
 
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])

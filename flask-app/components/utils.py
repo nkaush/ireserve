@@ -26,3 +26,4 @@ def get_response_with_user_cookie(response, user):
         print(datetime.datetime.now(), expire_date)
         response.set_cookie('user', jsonify_user(user), expires=expire_date)
     return response
+    

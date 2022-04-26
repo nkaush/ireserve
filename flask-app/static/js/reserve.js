@@ -1,11 +1,11 @@
 function try_to_make_reservation(event) {
+  const room_id = event.currentTarget.room_id
+
   const url = "/reservation/add";
   const data = {
-    // 'Email' : document.getElementById('email').value,
     'GroupID' : document.getElementById('groupid').value,
-    'RoomID': document.getElementById('roomid').value,
-    'StartTime': document.getElementById('starttime').value,
-    'EndTime': document.getElementById('endtime').value
+    'RoomID': room_id,
+    'StartTime': document.getElementById('starttime').value
   };
 
   console.log(data);
@@ -28,6 +28,7 @@ function try_to_make_reservation(event) {
         msg.className = "";
         msg.classList.add("success", "alert", "alert-success")
         msg.innerHTML = data.message;
+        document.getElementById('table-row-' + room_id).style.display = "none";
       });
     } else {
       response.json().then((data) => {
@@ -52,3 +53,16 @@ function try_to_make_reservation(event) {
 
   return false;
 }
+
+var confirmModal = document.getElementById('confirmModal')
+confirmModal.addEventListener('show.bs.modal', function (event) {
+  // Button that triggered the modal
+  var button = event.relatedTarget
+  // Extract info from data-bs-* attributes
+  var rid = button.getAttribute('data-bs-roomid')
+  var reserve_form = document.getElementById('make_res_form');
+  reserve_form.room_id = rid;
+
+  // var modalBodyMessage = confirmModal.querySelector('.modal-body p')
+  // modalBodyMessage.innerHTML = 'Are you sure you want to delete your reservation in ' + building + ' Room ' + rnum + ' at ' + start_time + '?'
+})

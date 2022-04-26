@@ -29,12 +29,18 @@ def delete_reservation(db, reservation_id):
 
     return make_response(responseObject, 200)
 
+def next_hour(t):
+    hour = int(t[11:13]) + 1
+    return t[:11] + "{:02}".format(hour) + t[13:]
+
 def add_reservation(request, db):
     user = get_user(request)
     group_id = request.json.get('GroupID')
     room_id = request.json.get('RoomID')
     start_time = request.json.get('StartTime')
-    end_time = request.json.get('EndTime')
+    print("hello", start_time)
+    start_time = ' '.join(start_time.split('T'))
+    end_time = next_hour(start_time)
  
     # checking if reservtaion already exists
     reservation = db.engine.execute(f"SELECT * FROM reservation WHERE RoomID = {room_id} AND StartTime = '{start_time}';").first()

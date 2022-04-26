@@ -12,7 +12,7 @@
     <form id="reserveform" method="get" action="{{ url_for('make_reservation') }}">
       <div class="form-group mb-3">
         <label for="meeting-time">Choose a start time for your reservation:</label>
-        <input type="datetime-local" id="starttime" name="start" value="{{ start }}"
+        <input type="datetime-local" id="starttime" name="start" value="{{ start_preserved }}"
           min="2022-04-01T00" step="3600" placeholder="Start Time" class="form-control">
           
       </div>
@@ -45,14 +45,14 @@
       </thead>
       <tbody>
         {% for r in queried_rooms %}
-        <tr>
+        <tr id="table-row-{{ r.RoomID }}">
           <td>{{ r.Region }}</th>
           <td>{{ r.BuildingName }}</td>
           <td>{{ r.RoomNumber }}</td>
           <td>{{ r.RoomCapacity }}</td>
           <td>{{ r.Popularity }}</td>
           <td class="align-middle">
-            <button type="button" class="btn btn-outline-primary d-flex me-2" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-rid="{{ r.ReservationID }}" meta-data-rnum="{{ r.RoomNumber }}" meta-data-building="{{ r.BuildingName }}" meta-data-start="{{ r.StartTime }}">Reserve</button>
+            <button type="button" class="btn btn-outline-primary d-flex me-2" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-roomid="{{ r.RoomID }}">Reserve</button>
           </td>
         </tr>
         {% endfor %}
@@ -69,14 +69,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <label for="groupid">Choose a group to make a reservation under:</label>
-        <select id="groupid" class="form-select mb-3" aria-label="Select a Group">
-          <option selected="true" disabled="disabled"></option>
-          {% for group in user_groups %}
-          <option value="{{ group.GroupID }}">{{ group.GroupName }}</option>
-          {% endfor %}
-        </select>
-        <form id="delete_res_form" onsubmit="return delete_reservation(event);">
+        <form id="make_res_form" onsubmit="return try_to_make_reservation(event);">
+          <label for="groupid">Choose a group to make a reservation under:</label>
+          <select id="groupid" class="form-select mb-3" aria-label="Select a Group" required>
+            <option selected="true" disabled="disabled"></option>
+            {% for group in user_groups %}
+            <option value="{{ group.GroupID }}">{{ group.GroupName }}</option>
+            {% endfor %}
+          </select>
           <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-outline-success me-2" data-bs-dismiss="modal">Confirm Reservation</button>
         </form>

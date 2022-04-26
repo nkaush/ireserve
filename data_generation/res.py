@@ -22,7 +22,7 @@ def random_datetime(start_d, end_d, start_t, end_t, prop1, prop2):
 
 def next_hour(t):
     hour = int(t[11:13]) + 1
-    return t[:11] + str(hour) + t[13:]
+    return t[:11] + "{:02}".format(hour) + t[13:]
 
 class Reservation:
     def __init__(self):
