@@ -1,3 +1,4 @@
+import datetime
 import json
 
 def is_logged_in(request):
@@ -18,6 +19,10 @@ def jsonify_user(u):
     })
 
 def get_response_with_user_cookie(response, user):
+    expire_date = datetime.datetime.now(datetime.timezone.utc)
+    expire_date = expire_date + datetime.timedelta(hours=2)
     if user is not None:
-        response.set_cookie('user', jsonify_user(user))
+        print("setting user cookie")
+        print(datetime.datetime.now(), expire_date)
+        response.set_cookie('user', jsonify_user(user), expires=expire_date)
     return response

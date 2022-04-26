@@ -10,7 +10,6 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">ID</th>
       <th scope="col">Building</th>
       <th scope="col">Room</th>
       <th scope="col">Reserver</th>
@@ -23,7 +22,6 @@
   <tbody>
     {% for r in queried_reservations %}
     <tr id="table-row-{{ r.ReservationID }}">
-      <th class="align-middle" scope="row">{{ r.ReservationID }}</th>
       <td class="align-middle">{{ r.BuildingName }}</td>
       <td class="align-middle">{{ r.RoomNumber }}</td>
       <td class="align-middle">{{ r.FirstName }} {{ r.LastName }}</td>

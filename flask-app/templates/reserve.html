@@ -8,38 +8,26 @@
 {% block content %}
 <div class="card">
   <div class="card-body">
-    <h3>Make an Reservation</h3>
-    <form id="reserveform" method="POST" onsubmit="return try_to_make_reservation();">
-      <!-- <div class="form-group mb-3">
-        <input type="text" class="form-control" id="email" placeholder="Email">
-      </div> -->
-      <!-- <div class="form-group mb-3">
-        <input type="text" class="form-control" id="groupid" placeholder="Group ID">
-      </div> -->
-      <label for="groupid">Choose a group to make a reservation under:</label>
+    <h3>Find a Time</h3>
+    <form id="reserveform" method="get" action="{{ url_for('make_reservation') }}">
+      
+      <!--<label for="groupid">Choose a group to make a reservation under:</label>
       <select id="groupid" class="form-select mb-3" aria-label="Select a Group">
         <option selected="true" disabled="disabled"></option>
         {% for group in user_groups %}
         <option value="{{ group.GroupID }}">{{ group.GroupName }}</option>
         {% endfor %}
-      </select>
-      <div class="form-group mb-3">
+      </select> -->
+      <!-- <div class="form-group mb-3">
         <input type="text" class="form-control" id="roomid" placeholder="Room ID">
-      </div>
+      </div> -->
       <div class="form-group mb-3">
         <label for="meeting-time">Choose a start time for your reservation:</label>
-        <input type="datetime-local" id="starttime"
+        <input type="datetime-local" id="starttime" name="start" value="{{ start }}"
           min="2022-04-01T00" step="3600" placeholder="Start Time" class="form-control">
           
       </div>
-      <div class="form-group mb-3">
-        <label for="meeting-time">Choose a end time for your reservation:</label>
-    
-        <input type="datetime-local" id="endtime"
-              min="2022-04-01T00" step="3600" placeholder="End Time" class="form-control">
-          
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-outline-primary">Search</button>
     </form>
     <br>
     <div id="message" class="" role="alert">
@@ -49,25 +37,34 @@
 </div>
 <div class="card mt-3">
   <div class="card-body">
-    <h3>Rooms Available</h3>
+    <h3>Select a Room</h3>
+    <form class="d-flex mb-3" method="get" action="{{ url_for('make_reservation') }}">
+      <input class="form-control me-2" type="search" value="{{ building }}" placeholder="Search for buildings..." aria-label="Search" name="building">
+      <input type="hidden" name="start" value="{{ start }}"/> 
+      <button class="btn btn-outline-success" id="search_rooms_button" type="submit">Search</button>
+    </form>
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">Room ID</th>
+          <th scope="col">Region</th>
           <th scope="col">Building Name</th>
           <th scope="col">Room Number</th>
           <th scope="col">Capacity</th>
           <th scope="col">Popularity</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         {% for r in queried_rooms %}
         <tr>
-          <th scope="row">{{ r.RoomID }}</th>
+          <td>{{ r.Region }}</th>
           <td>{{ r.BuildingName }}</td>
           <td>{{ r.RoomNumber }}</td>
           <td>{{ r.RoomCapacity }}</td>
           <td>{{ r.Popularity }}</td>
+          <td class="align-middle">
+            <button type="button" class="btn btn-outline-primary d-flex me-2" data-bs-toggle="modal" data-bs-target="#confirmModal" data-bs-rid="{{ r.ReservationID }}" meta-data-rnum="{{ r.RoomNumber }}" meta-data-building="{{ r.BuildingName }}" meta-data-start="{{ r.StartTime }}">Reserve</button>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

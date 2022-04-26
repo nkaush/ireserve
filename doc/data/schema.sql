@@ -10,7 +10,7 @@ CREATE TABLE `user` (
   `LastName` VARCHAR(255) NOT NULL, 
   `Email` VARCHAR(255) NOT NULL, 
   `HashedPassword` VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 DROP TABLE IF EXISTS `building`;
 

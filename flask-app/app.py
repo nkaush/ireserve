@@ -72,7 +72,7 @@ def update_user():
 # View all reservations   
 @app.route('/reservations')
 def get_all_reservations():
-    reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;")
+    reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime;")
     return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), no_delete=True)
 
 # View all reservations made by a particular user  
@@ -87,7 +87,7 @@ def reservations_for_user():
     print(user_cookie)
 
     # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group`;"), query="{}".format(user_id))
+    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
     
     return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request))
 
@@ -111,12 +111,25 @@ def make_reservation():
     user_cookie = get_user(request)
     user_id = -1
 
+    searched_building = request.args.get("building")
+    searched_time = request.args.get("start")
+    rooms = None
+
+    print("time:", searched_time)
+
+    if searched_time is None or searched_time == "":
+        rooms = [] 
+    elif searched_building is None: 
+        rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room ORDER BY Popularity DESC;")
+    else: 
+        print(searched_building)
+        rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
+
     if user_cookie is not None:
         user_id = user_cookie['UserID']
 
-    rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
     groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
-    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups)
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building)
 
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])
@@ -127,7 +140,6 @@ def delete_reservation_page():
 @app.route('/rooms', methods=['GET'])
 def search_room():
     searched_building = request.args.get("building")
-
     rooms = None
 
     if searched_building is None: 
