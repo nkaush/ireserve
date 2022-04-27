@@ -1,4 +1,4 @@
-from flask import render_template, make_response
+from flask import render_template, make_response, redirect, jsonify
 from .utils import is_logged_in, get_user
 from sqlalchemy import text
 
@@ -76,3 +76,54 @@ def add_reservation(request, db):
         }
  
         return make_response(responseObject, 403)
+
+def make_reservation(request, db):
+    if not is_logged_in(request):
+        return redirect("/login", code=302)
+
+    user_cookie = get_user(request)
+    user_id = -1
+
+    searched_building = request.args.get("building")
+    searched_time = request.args.get("start")
+    rooms = None
+    start_preserved = searched_time
+
+    if not (searched_time is None or searched_time == ""):
+        searched_time = ' '.join(searched_time.split('T'))
+        if searched_time[-6:] != ":00:00":
+            searched_time = searched_time + ":00"
+        start_preserved = 'T'.join(searched_time.split(' '))
+    print("time:", searched_time)
+
+    if searched_time is None or searched_time == "":
+        rooms = [] 
+    elif searched_building is None: 
+        rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room r WHERE NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;")
+    else: 
+        print(searched_building)
+        rooms = db.engine.execute(text(f"SELECT * FROM building b NATURAL JOIN room r WHERE b.BuildingName LIKE :query AND NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
+
+    if user_cookie is not None:
+        user_id = user_cookie['UserID']
+
+    if searched_building is None:
+        searched_building = ""
+    
+    groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
+
+    print(searched_time, start_preserved)    
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved, route='reserve')
+
+def update_reservation_group(request, db):
+    group_id = request.json.get('GroupID')
+    res_id = request.json.get('ReservationID')
+    db.engine.execute(f'UPDATE reservation SET GroupID = {group_id} WHERE ReservationID = {res_id};')
+    gname = db.engine.execute(f'SELECT GroupName FROM `group` WHERE GroupID = {group_id};')
+    gname = gname.first()[0]
+ 
+    return jsonify({
+        'status' : 'success',
+        'message': 'Successfully updated reservation.',
+        'new_group_name': str(gname)
+    })
