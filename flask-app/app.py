@@ -1,7 +1,8 @@
 from flask import Flask, request, make_response, render_template, send_from_directory, redirect
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from sqlalchemy import text
+import sqlalchemy
+import time
 import os
 
 from components.utils import is_logged_in, get_user
@@ -71,15 +72,41 @@ def search_users():
 def update_user():
     return comp_ul.update_user(request, db)
 
+# Update a user's name
+@app.route('/groups', methods=['GET'])
+def get_groups():
+    if not is_logged_in(request):
+        return redirect("/login", code=302)
+    
+    user_cookie = get_user(request)
+    user_id = user_cookie['UserID']
+
+    grps = db.engine.execute(f"SELECT * FROM (SELECT * FROM `groupassignment` WHERE UserID = {user_id}) tmp NATURAL JOIN `group`;")
+
+    user_groups = []
+    for g in grps:
+        entry = {}
+        entry['name'] = g.GroupName
+        entry['users'] = db.engine.execute(f"SELECT u.FirstName, u.LastName, u.Email FROM (SELECT * FROM `groupassignment` WHERE GroupID = {g.GroupID}) tmp NATURAL JOIN `user` u WHERE u.UserID != {user_id};")
+        user_groups.append(entry)
+
+    return render_template("groups.html", user_groups=user_groups, logged_in=is_logged_in(request), route='groups')
+
 # View all reservations   
-@app.route('/reservations')
+@app.route('/reservations/all')
 def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime;")
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), no_delete=True)
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True)
 
 # View all reservations made by a particular user  
-@app.route('/reservations/user', methods=['GET'])
+@app.route('/reservations', methods=['GET', 'PUT'])
 def reservations_for_user():
+    if request.method == 'PUT':
+        return comp_res.update_reservation_group(request, db)
+
+    if not is_logged_in(request):
+        return redirect("/login", code=302)
+
     user_cookie = get_user(request)
     user_id = None
 
@@ -89,9 +116,9 @@ def reservations_for_user():
     print(user_cookie)
 
     # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
-    
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request))
+    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
+    user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups)
 
 @app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
@@ -102,47 +129,13 @@ def get_popular_may21_reservations():
 def delete_reservation(reservation_id):
     return comp_res.delete_reservation(db, reservation_id)
 
-#add reservation    
-@app.route('/reservation/add', methods=['POST'])
-def add_reservation():
-    return comp_res.add_reservation(request, db)
-
 # Make a reservation  
-@app.route('/reserve', methods=['GET'])
+@app.route('/reserve', methods=['GET', 'POST'])
 def make_reservation():
-    user_cookie = get_user(request)
-    user_id = -1
-
-    searched_building = request.args.get("building")
-    searched_time = request.args.get("start")
-    rooms = None
-    start_preserved = searched_time
-
-    if not (searched_time is None or searched_time == ""):
-        searched_time = ' '.join(searched_time.split('T'))
-        if searched_time[-6:] != ":00:00":
-            searched_time = searched_time + ":00"
-        start_preserved = 'T'.join(searched_time.split(' '))
-    print("time:", searched_time)
-
-    if searched_time is None or searched_time == "":
-        rooms = [] 
-    elif searched_building is None: 
-        rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room r WHERE NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;")
-    else: 
-        print(searched_building)
-        rooms = db.engine.execute(text(f"SELECT * FROM building b NATURAL JOIN room r WHERE b.BuildingName LIKE :query AND NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
-
-    if user_cookie is not None:
-        user_id = user_cookie['UserID']
-
-    if searched_building is None:
-        searched_building = ""
-    
-    groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
-
-    print(searched_time, start_preserved)    
-    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved)
+    if request.method == 'POST':
+        return comp_res.add_reservation(request, db)
+    elif request.method == 'GET':
+        return comp_res.make_reservation(request, db)
 
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])
@@ -159,7 +152,7 @@ def search_room():
         rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
     else: 
         print(searched_building)
-        rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+        rooms = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
     return render_template("rooms.html", route="rooms", queried_rooms=rooms, logged_in=is_logged_in(request))
 
@@ -168,6 +161,25 @@ def search_room():
 def display_reservation_map():
     comp_map.create_map(db)
     return render_template('map.html', route="map", logged_in=is_logged_in(request))
+
+async def async_stored_prodecure_call():
+    conn_str = f"mysql://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
+    engine = sqlalchemy.create_engine(conn_str)
+    connection = engine.raw_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.callproc('Compute_Ratings', [])
+        results = list(cursor.fetchall())
+        cursor.close()
+        connection.commit()
+        return results
+    finally:
+        connection.close()
+
+@app.route('/call-stored-procedure', methods=['POST'])
+async def call_stored_procedure():
+    result = await async_stored_prodecure_call()
+    return make_response({'status': 'ok', 'result': result}, 200)
 
 def create_app():
    return app

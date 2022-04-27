@@ -1,7 +1,6 @@
 function try_to_make_reservation(event) {
   const room_id = event.currentTarget.room_id
-
-  const url = "/reservation/add";
+  const url = "/reserve";
   const data = {
     'GroupID' : document.getElementById('groupid').value,
     'RoomID': room_id,
@@ -35,7 +34,7 @@ function try_to_make_reservation(event) {
         console.log(data);
         var msg = document.getElementById('message');
         msg.className = "";
-        msg.classList.add("warning", "alert", "alert-warning")
+        msg.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show")
         msg.innerHTML = data.message;
       });
     }

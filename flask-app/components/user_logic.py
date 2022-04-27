@@ -9,6 +9,9 @@ def logout():
 
 def login(request, db):
     if request.method == 'GET':
+        if is_logged_in(request):
+            return redirect("/", code=302)
+
         return render_template("login.html")
     else:
         email = request.json.get("email")
@@ -63,6 +66,9 @@ def search_users(request, db):
 
 def register(request, db):
     if request.method == 'GET':
+        if is_logged_in(request):
+            return redirect("/", code=302)
+        
         return render_template("register.html")
 
     # getting name and email
@@ -98,7 +104,7 @@ def register(request, db):
             print("here")
             responseObject = {
                 'status' : 'fail',
-                'message': 'Some error occured !!'
+                'message': 'Could not create account.'
             }
 
             return make_response(responseObject, 400)
@@ -107,7 +113,7 @@ def register(request, db):
         # if user already exists then send status as fail
         responseObject = {
             'status' : 'fail',
-            'message': 'User already exists !!'
+            'message': f'{email} is already taken.'
         }
  
         return make_response(responseObject, 403)
