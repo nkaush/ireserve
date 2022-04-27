@@ -1,4 +1,5 @@
 flask
+Flask[async]
 folium
 flask_sqlalchemy
 mysqlclient

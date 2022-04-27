@@ -1,7 +1,8 @@
 from flask import Flask, request, make_response, render_template, send_from_directory, redirect
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from sqlalchemy import text
+import sqlalchemy
+import time
 import os
 
 from components.utils import is_logged_in, get_user
@@ -115,7 +116,7 @@ def reservations_for_user():
     print(user_cookie)
 
     # checking for reservation
-    reservations = db.engine.execute(text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
+    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
     user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
     return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups)
 
@@ -151,7 +152,7 @@ def search_room():
         rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
     else: 
         print(searched_building)
-        rooms = db.engine.execute(text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+        rooms = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
     return render_template("rooms.html", route="rooms", queried_rooms=rooms, logged_in=is_logged_in(request))
 
@@ -160,6 +161,25 @@ def search_room():
 def display_reservation_map():
     comp_map.create_map(db)
     return render_template('map.html', route="map", logged_in=is_logged_in(request))
+
+async def async_stored_prodecure_call():
+    conn_str = f"mysql://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"
+    engine = sqlalchemy.create_engine(conn_str)
+    connection = engine.raw_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.callproc('Compute_Ratings', [])
+        results = list(cursor.fetchall())
+        cursor.close()
+        connection.commit()
+        return results
+    finally:
+        connection.close()
+
+@app.route('/call-stored-procedure', methods=['POST'])
+async def call_stored_procedure():
+    result = await async_stored_prodecure_call()
+    return make_response({'status': 'ok', 'result': result}, 200)
 
 def create_app():
    return app
