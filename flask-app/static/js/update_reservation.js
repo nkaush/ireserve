@@ -35,6 +35,10 @@ confirmModal.addEventListener('show.bs.modal', function (event) {
   var rnum = button.getAttribute('meta-data-rnum')
   var building = button.getAttribute('meta-data-building')
   var start_time = button.getAttribute('meta-data-start')
+  console.log(building)
+  console.log(rnum)
+  console.log(start_time)
+  console.log(reservation_id)
 
   var delete_form = document.getElementById('delete_res_form');
   delete_form.reservation_id = reservation_id;

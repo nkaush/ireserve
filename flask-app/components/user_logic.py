@@ -1,5 +1,5 @@
 from flask import render_template, make_response, redirect
-from .utils import get_response_with_user_cookie, is_logged_in, get_user
+from .utils import get_response_with_user_cookie, is_admin, is_logged_in, get_user, jsonify_user
 from sqlalchemy import text
 
 def logout():
@@ -10,7 +10,7 @@ def logout():
 def login(request, db):
     if request.method == 'GET':
         if is_logged_in(request):
-            return redirect("/", code=302)
+            return redirect("/")
 
         return render_template("login.html")
     else:
@@ -27,7 +27,10 @@ def login(request, db):
         if user.HashedPassword != password: # invalid password
             return make_response({"message": "Invalid email and/or password."}, 401)
 
-        resp = redirect("/", code=302) # redirect to homepage after successful login
+        if is_admin(None, usr=jsonify_user(user)):
+            resp = redirect("/admin")
+        else:
+            resp = redirect("/", code=302) # redirect to homepage after successful login
         return get_response_with_user_cookie(resp, user)
 
 def search_users(request, db):
@@ -43,7 +46,7 @@ def search_users(request, db):
                 (SELECT DISTINCT u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
                     WHERE grp.GroupName LIKE :query)
                 UNION (SELECT  u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u
-                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7));
+                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 40));
                 """), query='CS4__ %'
             )
         else:
@@ -52,7 +55,7 @@ def search_users(request, db):
                 (SELECT DISTINCT u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u NATURAL JOIN `groupassignment` ga NATURAL JOIN `group` grp
                     WHERE grp.GroupName LIKE :query AND (CONCAT(u.FirstName, ' ', u.LastName) LIKE :filter))
                 UNION (SELECT  u.UserID, u.FirstName, u.LastName, u.Email FROM `user` u
-                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 7) 
+                    WHERE u.UserID IN (SELECT r.UserID FROM reservation r GROUP BY r.UserID HAVING COUNT(r.UserID) >= 40) 
                     AND (CONCAT(u.FirstName, ' ', u.LastName) LIKE :filter) 
                 );
                 """), query='CS4__ %', filter="%{}%".format(searched_user)

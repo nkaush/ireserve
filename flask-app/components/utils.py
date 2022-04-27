@@ -10,6 +10,20 @@ def get_user(request):
         return json.loads(cookie)
     return None
 
+def is_admin(request, usr=None):
+    if request is not None:
+        usr = get_user(request)
+    
+        return is_logged_in(request) \
+            and usr['FirstName'] == 'root' \
+            and usr['LastName'] == 'admin' \
+            and usr['Email'] == 'admin@ireserve.com'
+    else: 
+        usr = json.loads(usr)
+        return usr['FirstName'] == 'root' \
+            and usr['LastName'] == 'admin' \
+            and usr['Email'] == 'admin@ireserve.com'
+
 def jsonify_user(u):
     return json.dumps({
         "Email": u.Email,
