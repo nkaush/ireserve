@@ -146,15 +146,29 @@ def delete_reservation_page():
 @app.route('/rooms', methods=['GET'])
 def search_room():
     searched_building = request.args.get("building")
-    rooms = None
+    rating = None
 
     if searched_building is None: 
-        rooms = db.engine.execute("SELECT * FROM building b NATURAL JOIN room;")
+        rating = db.engine.execute("SELECT * FROM star_ratings sr NATURAL JOIN room NATURAL JOIN building;")
     else: 
         print(searched_building)
-        rooms = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+        rating = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
-    return render_template("rooms.html", route="rooms", queried_rooms=rooms, logged_in=is_logged_in(request))
+    return render_template("rooms.html", route="rooms", queried_ratings=rating, logged_in=is_logged_in(request))
+
+# #Search for room   
+# @app.route('/rooms', methods=['GET'])
+# def search_rating():
+#     searched_building = request.args.get("building")
+#     rating = None
+
+#     if searched_building is None: 
+#         rating = db.engine.execute("SELECT * FROM star_ratings sr NATURAL JOIN room NATURAL JOIN building;")
+#     # else: 
+#     #     print(searched_building)
+#     #     rooms = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+
+#     return render_template("ratings.html", route="ratings", queried_ratings=rating, logged_in=is_logged_in(request))
 
 #Show reservation map  
 @app.route('/map', methods=['GET'])
