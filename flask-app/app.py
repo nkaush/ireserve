@@ -116,10 +116,12 @@ def make_reservation():
     searched_building = request.args.get("building")
     searched_time = request.args.get("start")
     rooms = None
-    start_preserved = None
+    start_preserved = searched_time
 
     if not (searched_time is None or searched_time == ""):
-        searched_time = ' '.join(searched_time.split('T')) + ":00"
+        searched_time = ' '.join(searched_time.split('T'))
+        if searched_time[-6:] != ":00:00":
+            searched_time = searched_time + ":00"
         start_preserved = 'T'.join(searched_time.split(' '))
     print("time:", searched_time)
 
@@ -138,8 +140,8 @@ def make_reservation():
         searched_building = ""
     
     groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
-    print(user_id, groups, groups.rowcount)
-    
+
+    print(searched_time, start_preserved)    
     return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved)
 
 # Make a reservation  
