@@ -2,10 +2,9 @@ from flask import Flask, request, make_response, render_template, send_from_dire
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import sqlalchemy
-import time
 import os
 
-from components.utils import is_logged_in, get_user
+from components.utils import is_logged_in, get_user, is_admin
 import components.reservation as comp_res
 import components.user_logic as comp_ul
 import components.map as comp_map
@@ -96,7 +95,7 @@ def get_groups():
 @app.route('/reservations/all')
 def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime;")
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True)
+    return render_template("all-reservations.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True)
 
 # View all reservations made by a particular user  
 @app.route('/reservations', methods=['GET', 'PUT'])
@@ -116,9 +115,11 @@ def reservations_for_user():
     print(user_cookie)
 
     # checking for reservation
-    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
+    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
     user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups)
+    group_reservations = db.engine.execute(f"SELECT * FROM (SELECT * FROM reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = {user_id}) AND r.UserID != {user_id}) tmp NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` NATURAL JOIN user ORDER BY tmp.StartTime DESC;")
+
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations)
 
 @app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
@@ -161,6 +162,10 @@ def search_room():
 def display_reservation_map():
     comp_map.create_map(db)
     return render_template('map.html', route="map", logged_in=is_logged_in(request))
+
+@app.route('/admin', methods=['GET'])
+def view_admin_page():
+    return render_template('admin.html', route="admin", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 async def async_stored_prodecure_call():
     conn_str = f"mysql://{CLOUD_SQL_USERNAME}:{CLOUD_SQL_PASSWORD}@{CLOUD_SQL_PUBLIC_IP_ADDRESS}/{CLOUD_SQL_DATABASE_NAME}?unix_socket=/cloudsql/{CLOUD_SQL_CONNECTION_NAME}"

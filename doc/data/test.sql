@@ -12,3 +12,12 @@ CREATE TRIGGER UpdateRatingTrigger
             UPDATE room SET Popularity = @popularity WHERE RoomID = new.RoomID;
         END IF;
     END;
+
+
+
+SELECT * FROM (reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = 677) AND r.UserID != 677) tmp 
+    NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY tmp.StartTime DESC;
+
+
+SELECT tmp.num_res, COUNT(*) FROM (SELECT UserID, COUNT(*) AS num_res FROM reservation GROUP BY UserID) tmp GROUP BY tmp.num_res ORDER BY tmp.num_res DESC;
+
