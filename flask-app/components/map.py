@@ -7,7 +7,7 @@ import pandas as pd
 
 def create_map(db):
     # Make an empty map
-    m = folium.Map(location=[40.105, -88.228], tiles="OpenStreetMap", zoom_start=16)
+    m = folium.Map(location=[40.104, -88.228], tiles="OpenStreetMap", zoom_start=15.4)
 
     reservations = db.engine.execute("SELECT `BuildingName`, COUNT(`BuildingName`) AS res_count FROM `reservation` NATURAL JOIN `room` NATURAL JOIN `building` GROUP BY `BuildingName` ORDER BY `BuildingName`;")
     buildings = []
@@ -35,11 +35,11 @@ def create_map(db):
     for i in range(0,len(data)):
         folium.Circle(
             location=[data.iloc[i]['lat'], data.iloc[i]['lon']],
-            popup=data.iloc[i]['name'],
+            popup="{}: {}".format(data.iloc[i]['name'], data.iloc[i]['value']),
             radius=float(data.iloc[i]['value'])/85,
-            color='crimson',
+            color='blue',
             fill=True,
-            fill_color='crimson'
+            fill_color='blue'
         ).add_to(m)
 
     # Save map  
