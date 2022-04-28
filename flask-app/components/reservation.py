@@ -1,9 +1,9 @@
 from flask import render_template, make_response, redirect, jsonify
 from .utils import is_logged_in, get_user
-from sqlalchemy import text
+import sqlalchemy
 
 def get_popular_may21_reservations(request, db):
-    reservations = db.engine.execute(text(
+    reservations = db.engine.execute(sqlalchemy.text(
         """
         SELECT tmp.BuildingName, AVG(tmp.Popularity) AS AVG_POPULARITY
         FROM (SELECT * FROM room r NATURAL JOIN building b
@@ -102,7 +102,7 @@ def make_reservation(request, db):
         rooms = db.engine.execute(f"SELECT * FROM building b NATURAL JOIN room r WHERE NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;")
     else: 
         print(searched_building)
-        rooms = db.engine.execute(text(f"SELECT * FROM building b NATURAL JOIN room r WHERE b.BuildingName LIKE :query AND NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
+        rooms = db.engine.execute(sqlalchemy.text(f"SELECT * FROM building b NATURAL JOIN room r WHERE b.BuildingName LIKE :query AND NOT EXISTS (SELECT * FROM reservation res WHERE r.RoomID = res.RoomID AND res.StartTime = '{searched_time}') ORDER BY Popularity DESC;"), query="%{}%".format(searched_building))
 
     if user_cookie is not None:
         user_id = user_cookie['UserID']
@@ -127,3 +127,22 @@ def update_reservation_group(request, db):
         'message': 'Successfully updated reservation.',
         'new_group_name': str(gname)
     })
+
+def view_reservations(request, db):
+    if not is_logged_in(request):
+        return redirect("/login", code=302)
+
+    user_cookie = get_user(request)
+    user_id = None
+
+    if user_cookie is not None:
+        user_id = user_cookie['UserID']
+
+    print(user_cookie)
+
+    # checking for reservation
+    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
+    user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
+    group_reservations = db.engine.execute(f"SELECT * FROM (SELECT * FROM reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = {user_id}) AND r.UserID != {user_id}) tmp NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` NATURAL JOIN user ORDER BY tmp.StartTime DESC;")
+
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations)

@@ -7,6 +7,7 @@ import os
 from components.utils import is_logged_in, get_user, is_admin
 import components.reservation as comp_res
 import components.user_logic as comp_ul
+import components.groups as comp_grp
 import components.map as comp_map
 
 load_dotenv('.env')
@@ -74,22 +75,14 @@ def update_user():
 # Update a user's name
 @app.route('/groups', methods=['GET'])
 def get_groups():
-    if not is_logged_in(request):
-        return redirect("/login", code=302)
-    
-    user_cookie = get_user(request)
-    user_id = user_cookie['UserID']
+    return comp_grp.get_groups(request, db)
 
-    grps = db.engine.execute(f"SELECT * FROM (SELECT * FROM `groupassignment` WHERE UserID = {user_id}) tmp NATURAL JOIN `group`;")
-
-    user_groups = []
-    for g in grps:
-        entry = {}
-        entry['name'] = g.GroupName
-        entry['users'] = db.engine.execute(f"SELECT u.FirstName, u.LastName, u.Email FROM (SELECT * FROM `groupassignment` WHERE GroupID = {g.GroupID}) tmp NATURAL JOIN `user` u WHERE u.UserID != {user_id};")
-        user_groups.append(entry)
-
-    return render_template("groups.html", user_groups=user_groups, logged_in=is_logged_in(request), route='groups')
+@app.route('/join-group', methods=['GET', 'POST'])
+def join_group():
+    if request.method == 'GET':
+        return comp_grp.join_group_get(request, db)
+    elif request.method == 'POST':
+        return comp_grp.join_group_post(request, db)
 
 # View all reservations   
 @app.route('/reservations/all')
@@ -102,25 +95,9 @@ def get_all_reservations():
 def reservations_for_user():
     if request.method == 'PUT':
         return comp_res.update_reservation_group(request, db)
-
-    if not is_logged_in(request):
-        return redirect("/login", code=302)
-
-    user_cookie = get_user(request)
-    user_id = None
-
-    if user_cookie is not None:
-        user_id = user_cookie['UserID']
-
-    print(user_cookie)
-
-    # checking for reservation
-    reservations = db.engine.execute(sqlalchemy.text("SELECT * FROM (SELECT * FROM reservation r WHERE r.UserID = :query) AS tmp1 NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime DESC;"), query="{}".format(user_id))
-    user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
-    group_reservations = db.engine.execute(f"SELECT * FROM (SELECT * FROM reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = {user_id}) AND r.UserID != {user_id}) tmp NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` NATURAL JOIN user ORDER BY tmp.StartTime DESC;")
-
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations)
-
+    elif request.method == 'GET':
+        return comp_res.view_reservations(request, db)
+    
 @app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
     return comp_res.get_popular_may21_reservations(request, db)
