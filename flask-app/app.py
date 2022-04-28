@@ -34,7 +34,7 @@ db = SQLAlchemy(app)
 @app.route('/')
 @app.route('/index')
 def home(): 
-    return render_template("index.html", logged_in=is_logged_in(request))
+    return render_template("index.html", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 # Serve static files
 @app.route('/static/<path:path>')
@@ -89,13 +89,13 @@ def get_groups():
         entry['users'] = db.engine.execute(f"SELECT u.FirstName, u.LastName, u.Email FROM (SELECT * FROM `groupassignment` WHERE GroupID = {g.GroupID}) tmp NATURAL JOIN `user` u WHERE u.UserID != {user_id};")
         user_groups.append(entry)
 
-    return render_template("groups.html", user_groups=user_groups, logged_in=is_logged_in(request), route='groups')
+    return render_template("groups.html", user_groups=user_groups, logged_in=is_logged_in(request), route='groups', is_admin=is_admin(request))
 
 # View all reservations   
 @app.route('/reservations/all')
 def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime;")
-    return render_template("all-reservations.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True)
+    return render_template("all-reservations.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True, is_admin=is_admin(request))
 
 # View all reservations made by a particular user  
 @app.route('/reservations', methods=['GET', 'PUT'])
@@ -119,7 +119,7 @@ def reservations_for_user():
     user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
     group_reservations = db.engine.execute(f"SELECT * FROM (SELECT * FROM reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = {user_id}) AND r.UserID != {user_id}) tmp NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` NATURAL JOIN user ORDER BY tmp.StartTime DESC;")
 
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations)
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations, is_admin=is_admin(request))
 
 @app.route('/reservations/current_popularity')
 def get_popular_may21_reservations():
@@ -141,7 +141,7 @@ def make_reservation():
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])
 def delete_reservation_page():
-    return render_template("delete_reservation.html", logged_in=is_logged_in(request))
+    return render_template("delete_reservation.html", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 #Search for room   
 @app.route('/rooms', methods=['GET'])
@@ -153,9 +153,9 @@ def search_room():
         rating = db.engine.execute("SELECT * FROM star_ratings sr NATURAL JOIN room NATURAL JOIN building;")
     else: 
         print(searched_building)
-        rating = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+        rating = db.engine.execute(sqlalchemy.text("SELECT * FROM star_ratings sr NATURAL JOIN building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
-    return render_template("rooms.html", route="rooms", queried_ratings=rating, logged_in=is_logged_in(request))
+    return render_template("rooms.html", route="rooms", queried_ratings=rating, logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 # #Search for room   
 # @app.route('/rooms', methods=['GET'])
@@ -175,7 +175,7 @@ def search_room():
 @app.route('/map', methods=['GET'])
 def display_reservation_map():
     comp_map.create_map(db)
-    return render_template('map.html', route="map", logged_in=is_logged_in(request))
+    return render_template('map.html', route="map", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 @app.route('/admin', methods=['GET'])
 def view_admin_page():
