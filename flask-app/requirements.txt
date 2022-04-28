@@ -7,3 +7,4 @@ python-dotenv
 waitress
 pandas
 mysql-connector-python
+IPython

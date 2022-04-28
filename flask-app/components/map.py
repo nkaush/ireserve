@@ -6,7 +6,6 @@ import folium
 from IPython.display import HTML 
 import pandas as pd
 
-
 def create_map(db):
     # Make an empty map
     m = folium.Map(location=[40.104, -88.228], tiles="OpenStreetMap", zoom_start=15.4)

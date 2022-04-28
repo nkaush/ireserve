@@ -2,7 +2,7 @@ PORT=8080
 
 start:
 	docker build -t 411-app .
-	docker run -it --rm -p $(PORT):$(PORT) 411-app
+	export PORT=8080 && docker run -it --rm -p $(PORT):$(PORT) -e $$PORT 411-app 
 
 develop:
 	docker build -t 411-develop -f Dockerfile-develop .
