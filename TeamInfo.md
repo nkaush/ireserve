@@ -20,7 +20,8 @@
 |   Info      |        Description     |
 | ----------- | ---------------------- |
 |  Title      |       iReserve         |
-| System URL  |      link_to_system    |
+| System URL (Azure)  |      http://ireserve.neilkaushikkar.com/    |
+| System URL (GCP)  |      https://ireserve-yurmzut6wq-uc.a.run.app/    |
 | Video Link  |      link_to_video     |
 
 ## Project Summary
