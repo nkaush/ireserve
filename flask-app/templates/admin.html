@@ -15,12 +15,15 @@
     <div class="col-sm-4">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Update Star Ratings</h5>
+          <h5 class="card-title">
+            Update Star Ratings  
+            <span id="stored-procedure-success-indicator" class="" hidden></span>
+          </h5>
           <p class="card-text">Run the <code>stored procedure</code> that recomputes room ratings and assigns anywhere from a 1 to a 5 star rating to each room.</p>
           <div class="row">
             <div class="col justify-content-md-center px-2 mx-2">
               <div class="row">
-                  <button id="stored-procedure-button" class="btn btn-primary btn-block" type="button">
+                  <button id="stored-procedure-button" class="btn btn-primary btn-block" type="button" onclick="call_stored_procedure(event)">
                     <span id="stored-procedure-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span>
                     <span id="stored-procedures-status-text">Compute</span>
                   </button>
