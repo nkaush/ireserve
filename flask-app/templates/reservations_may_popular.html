@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 {% block head %}
-  <!-- {{ super() }} -->
-  <!-- <style type="text/css">
-    .important { color: #336699; }
-  </style> -->
 {% endblock %}
 {% block content %}
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Building Name</th>
-      <th scope="col">Average Popularity</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in queried_reservations %}
-    <tr>
-      <th scope="row">{{loop.index}}</th>
-      <td>{{ r.BuildingName }}</td>
-      <td>{{ r.AVG_POPULARITY }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="card mb-5">
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Building Name</th>
+          <th scope="col">Average Popularity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in queried_reservations %}
+        <tr>
+          <th scope="row">{{loop.index}}</th>
+          <td>{{ r.BuildingName }}</td>
+          <td>{{ r.AVG_POPULARITY }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}
