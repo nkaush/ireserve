@@ -1,14 +1,16 @@
 function call_stored_procedure(event) {
+  console.log("running stored procedure...")
   const url = "/call-stored-procedure";
   const data = { };
 
   var btn = document.getElementById("stored-procedure-button")
   var btn_text = document.getElementById("stored-procedures-status-text")
   var btn_spinner = document.getElementById("stored-procedure-spinner")
+  var indicator = document.getElementById("stored-procedure-success-indicator")
   
   btn.disabled = true;
   btn_text.innerHTML = "Loading...";
-  btn_spinner.style.display = "inline";
+  btn_spinner.hidden = false;
 
   fetch(url, {
     "method": "POST",
@@ -21,38 +23,24 @@ function call_stored_procedure(event) {
   .then(function(response) {
     console.log(response.url);
     
-    if (response.status < 400) {
-      response.json().then((data) => {
-        console.log(data);
-        var msg = document.getElementById('message');
-        msg.className = "";
-        msg.classList.add("success", "alert", "alert-success")
-        msg.innerHTML = data.message;
-        document.getElementById('table-row-' + room_id).style.display = "none";
-      });
-    } else {
-      response.json().then((data) => {
-        console.log(data);
-        var msg = document.getElementById('message');
-        msg.className = "";
-        msg.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show")
-        msg.innerHTML = data.message;
-      });
-    }
+    btn.disabled = false;
+    btn_text.innerHTML = "Compute"
+    btn_spinner.hidden = true;
+    indicator.classList = []
+    indicator.classList.add("badge", "rounded-pill", "bg-success")
+    indicator.innerHTML = "Success"
+    indicator.hidden = false;
   })
   .catch(err => {
-    console.error(err.message);
-    err.json().then((data) => {
-      console.log(data);
-      var msg = document.getElementById('message');
-      msg.className = "";
-      msg.classList.add("warning", "alert", "alert-warning")
-      msg.innerHTML = data.message;
-    });
+    console.error("some error occurred");
+    btn.disabled = false;
+    btn_text.innerHTML = "Compute"
+    btn_spinner.hidden = true;
+    indicator.classList = []
+    indicator.classList.add("badge", "rounded-pill", "bg-danger")
+    indicator.innerHTML = "Error"
+    indicator.hidden = false;
   });
 
-  btn.disabled = false;
-  btn_text.innerHTML = "Compute"
-  btn_spinner.style.display = "none";
   return false;
 }
