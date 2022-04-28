@@ -3,7 +3,9 @@ from flask import render_template, make_response
 from .utils import is_logged_in, get_user
 from sqlalchemy import text
 import folium
+from IPython.display import HTML 
 import pandas as pd
+
 
 def create_map(db):
     # Make an empty map
@@ -33,9 +35,12 @@ def create_map(db):
 
     # add marker one by one on the map
     for i in range(0,len(data)):
+
+        name_of_building = data.iloc[i]['name']
+
         folium.Circle(
             location=[data.iloc[i]['lat'], data.iloc[i]['lon']],
-            popup="{}: {}".format(data.iloc[i]['name'], data.iloc[i]['value']),
+            popup="{}: {}".format(name_of_building, data.iloc[i]['value']),
             radius=float(data.iloc[i]['value'])/85,
             color='blue',
             fill=True,

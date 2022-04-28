@@ -1,5 +1,5 @@
 from flask import render_template, make_response, redirect, jsonify
-from .utils import is_logged_in, get_user
+from .utils import is_logged_in, get_user, is_admin
 import sqlalchemy
 
 def get_popular_may21_reservations(request, db):
@@ -17,7 +17,7 @@ def get_popular_may21_reservations(request, db):
     print(dir(reservations))
     print(reservations.rowcount)
 
-    return render_template("reservations_may_popular.html", queried_reservations=reservations, logged_in=is_logged_in(request))
+    return render_template("reservations_may_popular.html", queried_reservations=reservations, logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 def delete_reservation(db, reservation_id):
     db.engine.execute("DELETE FROM reservation WHERE ReservationID = {};".format(reservation_id))
@@ -113,7 +113,7 @@ def make_reservation(request, db):
     groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
 
     print(searched_time, start_preserved)    
-    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved, route='reserve')
+    return render_template("reserve.html", logged_in=is_logged_in(request), queried_rooms=rooms, user_groups=groups, start=searched_time, building=searched_building, start_preserved=start_preserved, route='reserve', is_admin=is_admin(request))
 
 def update_reservation_group(request, db):
     group_id = request.json.get('GroupID')
@@ -145,4 +145,4 @@ def view_reservations(request, db):
     user_groups = db.engine.execute(f"SELECT GroupID, GroupName FROM `group` g NATURAL JOIN `groupassignment` ga WHERE ga.UserID = {user_id};")
     group_reservations = db.engine.execute(f"SELECT * FROM (SELECT * FROM reservation r WHERE r.GroupID IN (SELECT GroupID FROM groupassignment WHERE UserID = {user_id}) AND r.UserID != {user_id}) tmp NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` NATURAL JOIN user ORDER BY tmp.StartTime DESC;")
 
-    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations)
+    return render_template("reservation.html", queried_reservations=reservations, logged_in=is_logged_in(request), route='reservations', all_res=False, user_groups=user_groups, group_reservations=group_reservations, is_admin=is_admin(request))

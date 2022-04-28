@@ -35,7 +35,7 @@ db = SQLAlchemy(app)
 @app.route('/')
 @app.route('/index')
 def home(): 
-    return render_template("index.html", logged_in=is_logged_in(request))
+    return render_template("index.html", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 # Serve static files
 @app.route('/static/<path:path>')
@@ -88,7 +88,7 @@ def join_group():
 @app.route('/reservations/all')
 def get_all_reservations():
     reservations = db.engine.execute("SELECT * FROM reservation NATURAL JOIN user NATURAL JOIN room NATURAL JOIN building NATURAL JOIN `group` ORDER BY StartTime;")
-    return render_template("all-reservations.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True)
+    return render_template("all-reservations.html", queried_reservations=reservations, logged_in=is_logged_in(request), all_res=True, is_admin=is_admin(request))
 
 # View all reservations made by a particular user  
 @app.route('/reservations', methods=['GET', 'PUT'])
@@ -118,7 +118,7 @@ def make_reservation():
 # Make a reservation  
 @app.route('/delete_reservation', methods=['GET'])
 def delete_reservation_page():
-    return render_template("delete_reservation.html", logged_in=is_logged_in(request))
+    return render_template("delete_reservation.html", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 #Search for room   
 @app.route('/rooms', methods=['GET'])
@@ -130,29 +130,15 @@ def search_room():
         rating = db.engine.execute("SELECT * FROM star_ratings sr NATURAL JOIN room NATURAL JOIN building;")
     else: 
         print(searched_building)
-        rating = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
+        rating = db.engine.execute(sqlalchemy.text("SELECT * FROM star_ratings sr NATURAL JOIN building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
 
-    return render_template("rooms.html", route="rooms", queried_ratings=rating, logged_in=is_logged_in(request))
-
-# #Search for room   
-# @app.route('/rooms', methods=['GET'])
-# def search_rating():
-#     searched_building = request.args.get("building")
-#     rating = None
-
-#     if searched_building is None: 
-#         rating = db.engine.execute("SELECT * FROM star_ratings sr NATURAL JOIN room NATURAL JOIN building;")
-#     # else: 
-#     #     print(searched_building)
-#     #     rooms = db.engine.execute(sqlalchemy.text("SELECT * FROM building b NATURAL JOIN room WHERE b.BuildingName LIKE :query;"), query="%{}%".format(searched_building))
-
-#     return render_template("ratings.html", route="ratings", queried_ratings=rating, logged_in=is_logged_in(request))
+    return render_template("rooms.html", route="rooms", queried_ratings=rating, logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 #Show reservation map  
 @app.route('/map', methods=['GET'])
 def display_reservation_map():
     comp_map.create_map(db)
-    return render_template('map.html', route="map", logged_in=is_logged_in(request))
+    return render_template('map.html', route="map", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
 @app.route('/admin', methods=['GET'])
 def view_admin_page():

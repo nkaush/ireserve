@@ -65,7 +65,7 @@ def search_users(request, db):
     else: 
         users = db.engine.execute(text("SELECT * FROM user u WHERE CONCAT(u.FirstName, ' ', u.LastName) LIKE :query;"), query="%{}%".format(searched_user))
 
-    return render_template("users.html", route="users", queried_users=users, is_priority=is_priority, logged_in=is_logged_in(request))    
+    return render_template("users.html", route="users", queried_users=users, is_priority=is_priority, logged_in=is_logged_in(request), is_admin=is_admin(request))    
 
 def register(request, db):
     if request.method == 'GET':
@@ -123,7 +123,7 @@ def register(request, db):
 
 def update_user(request, db):
     if request.method == 'GET':
-        return render_template("users_update.html", logged_in=is_logged_in(request))
+        return render_template("users_update.html", logged_in=is_logged_in(request), is_admin=is_admin(request))
 
     first_name = request.json.get("FirstName")
     last_name = request.json.get("LastName")
