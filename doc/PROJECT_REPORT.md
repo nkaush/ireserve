@@ -52,20 +52,20 @@ We added the heat map of rooms and their relative number of reservations using t
 
 We removed the functionality to automatically find the user a room based on their current location in present time. Rather, we just had them reserve available rooms based on time. 
 
-## 6. How our advanced database programs complement our application (Amaan): 
+## 6. How our advanced database programs complement our application: 
 Our advanced database program was able to complement our application by providing advanced features for the user. The user was able to login, create groups, see the most popular reservation locations visually on a map, and much more. Our advanced queries made a much better user experience and nice features for the user, like checking popular rooms, popular reservation locations at any moment, and also having the ability to see a visual representation on a map. We also optimized our queries by implementing advanced indexing techniques which gave a much faster and smoother user experience.  
 ## 7. Each team member's technical challenge (Neil): 
 
-## 8. Other changes in the final application from the original proposal (Amaan):
+## 8. Other changes in the final application from the original proposal:
 One thing that changed was that we did not create a "Find me a Room" page. We had noted in the proposal doc that we would create a "Find me a Room" page but we did not end up implementing this. Also, in the proposal we said on the homepage we would have a timeline, yet we did not inclue that either.
 ## 9. What future work we can do to improve the application (besides interface) (Neil):
 
-## 10. Final Division of labor and how well we managed teamwork (Amaan): 
+## 10. Final Division of labor and how well we managed teamwork: 
 We split up the work evenly among group members. Before every stage we split up the work and then met up regularly to discuss progress and work through any challenges we have been facing. We setup times for meetings where we planned out what we will be doing for that specific stage and by assigning tasks to each person. Below you can see a rough sketch of how we split up the work. In our proposal, we had a similar table, and from there you can view the changes we made to the roles and the various tasks.
 
 | **Task**                                                                    | **Person**                                                                                                  |
 |-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Front-End                                                              |  Everyone |
+| Front-End                                                              |  Neil<br>Shalin<br>Amaan<br>Akul |
 | Database Creation<br> | Neil<br>Amaan<br>Akul<br>Shalin                                                                                               |
 | Home Page Development<br>    | Shalin<br>Neil                                                                                                |
 | Login & Sign-up Page                                                        | Shalin<br>Amaan<br>Neil                                                                                           |
