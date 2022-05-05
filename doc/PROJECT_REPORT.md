@@ -55,6 +55,10 @@ We removed the functionality to automatically find the user a room based on thei
 ## 6. How our advanced database programs complement our application: 
 Our advanced database program was able to complement our application by providing advanced features for the user. The user was able to login, create groups, see the most popular reservation locations visually on a map, and much more. Our advanced queries made a much better user experience and nice features for the user, like checking popular rooms, popular reservation locations at any moment, and also having the ability to see a visual representation on a map. We also optimized our queries by implementing advanced indexing techniques which gave a much faster and smoother user experience.  
 ## 7. Each team member's technical challenge (Neil): 
+Neil: 
+Amaan: 
+Akul: 
+Shalin: The creation of the trigger was difficult because of the subquery that needed to be written where we needed to select from `rooms`. For this subquery, the return value of the subquery needed to be stored in a variable, and then set to its incremented value. This logic was difficult to understand as without a variable, using SQL to increment it was difficult. This, combined with the `UPDATE` statement caused me trouble as we had to match rooms with the new.RoomID for the RoomID of the newely inserted row. 
 
 ## 8. Other changes in the final application from the original proposal:
 One thing that changed was that we did not create a "Find me a Room" page. We had noted in the proposal doc that we would create a "Find me a Room" page but we did not end up implementing this. Also, in the proposal we said on the homepage we would have a timeline, yet we did not inclue that either.
