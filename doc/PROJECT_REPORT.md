@@ -58,7 +58,8 @@ Our advanced database program was able to complement our application by providin
 
 ## 8. Other changes in the final application from the original proposal:
 One thing that changed was that we did not create a "Find me a Room" page. We had noted in the proposal doc that we would create a "Find me a Room" page but we did not end up implementing this. Also, in the proposal we said on the homepage we would have a timeline, yet we did not inclue that either.
-## 9. What future work we can do to improve the application (besides interface) (Neil):
+## 9. What future work we can do to improve the application (besides interface):
+Some things that we would like to implement to improve the application are more features to allow user interactions and more features to enable collaboration within study groups. The only group interaction we implemented was joining groups and viewing all the reservations made within a group. We would like to add a group communication method like an email blast or an in-brower chat functionality. We would also like to have a group invite feature to allow people to invite their friends to their study groups. We want to implement some location-based functionality like finding rooms in your immediate vicinity as this feature proved to be more work than we anticipated.
 
 ## 10. Final Division of labor and how well we managed teamwork: 
 We split up the work evenly among group members. Before every stage we split up the work and then met up regularly to discuss progress and work through any challenges we have been facing. We setup times for meetings where we planned out what we will be doing for that specific stage and by assigning tasks to each person. Below you can see a rough sketch of how we split up the work. In our proposal, we had a similar table, and from there you can view the changes we made to the roles and the various tasks.
